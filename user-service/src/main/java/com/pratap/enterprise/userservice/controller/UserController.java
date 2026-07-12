@@ -18,9 +18,9 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createUser(@Valid @RequestBody UserRequest request) {
+    public UserResponse registerUser(@Valid @RequestBody UserRequest request) {
         return userService.createUser(request);
     }
 
