@@ -16,9 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
 
-
     private final OrderService orderService;
-
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
@@ -30,7 +28,6 @@ public class OrderController {
                 .body(orderService.createOrder(request));
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(
             @PathVariable Long id
@@ -41,7 +38,6 @@ public class OrderController {
         );
     }
 
-
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
 
@@ -50,4 +46,14 @@ public class OrderController {
         );
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<OrderResponse> updateOrderStatus(
+            @PathVariable Long id,
+            @RequestParam String status
+    ) {
+
+        return ResponseEntity.ok(
+                orderService.updateOrderStatus(id, status)
+        );
+    }
 }

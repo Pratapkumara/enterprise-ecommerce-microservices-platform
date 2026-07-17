@@ -10,10 +10,10 @@ public final class SecurityConstants {
     public static final String HEADER_NAME = "Authorization";
 
     public static final String[] PUBLIC_URLS = {
+            "/error",
             "/actuator/**",
             "/health",
             "/api/v1/auth/**",
             "/api/v1/users/register"
     };
-
 }

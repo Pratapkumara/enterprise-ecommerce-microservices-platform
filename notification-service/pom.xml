@@ -5,35 +5,42 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.3.5</version>
         <relativePath/>
     </parent>
+
 
     <groupId>com.pratap.enterprise</groupId>
     <artifactId>notification-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <name>notification-service</name>
     <description>Notification Service</description>
 
+
     <properties>
+
         <java.version>17</java.version>
-        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+
     </properties>
 
 
     <dependencies>
 
-        <!-- Spring Web -->
+
+        <!-- REST API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
 
-        <!-- Spring Data JPA -->
+        <!-- JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -47,7 +54,7 @@
         </dependency>
 
 
-        <!-- PostgreSQL Driver -->
+        <!-- PostgreSQL -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -55,21 +62,21 @@
         </dependency>
 
 
-        <!-- Spring Mail -->
+        <!-- Mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
 
-        <!-- Eureka Client -->
+        <!-- Eureka -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
 
-        <!-- Config Client -->
+        <!-- Config Server -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
@@ -90,6 +97,13 @@
         </dependency>
 
 
+        <!-- Prometheus Metrics -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -105,10 +119,13 @@
             <scope>test</scope>
         </dependency>
 
+
     </dependencies>
 
 
+
     <dependencyManagement>
+
         <dependencies>
 
             <dependency>
@@ -120,10 +137,13 @@
             </dependency>
 
         </dependencies>
+
     </dependencyManagement>
 
 
+
     <build>
+
         <plugins>
 
             <plugin>
@@ -131,7 +151,9 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
+
         </plugins>
+
     </build>
 
 
