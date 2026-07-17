@@ -25,7 +25,10 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    echo 'SonarQube configured'
+                    sh '''
+                    cd product-service
+                    mvn sonar:sonar
+                    '''
                 }
             }
         }
