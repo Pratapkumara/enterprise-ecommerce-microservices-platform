@@ -10,25 +10,49 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Code checkout from GitHub successful'
+                echo 'Code checkout from GitHub'
             }
         }
 
-        stage('Build Product Service') {
+
+        stage('Build All Microservices') {
             steps {
-                echo 'Building Product Service'
 
-                sh '''
-                cd product-service
-                mvn clean package -DskipTests
-                '''
+                script {
+
+                    def services = [
+                        'config-server',
+                        'discovery-server',
+                        'api-gateway',
+                        'user-service',
+                        'product-service',
+                        'inventory-service',
+                        'order-service',
+                        'payment-service',
+                        'notification-service'
+                    ]
+
+
+                    for (service in services) {
+
+                        echo "Building ${service}"
+
+                        sh """
+                        cd ${service}
+                        mvn clean package -DskipTests
+                        cd ..
+                        """
+
+                    }
+
+                }
+
             }
         }
+
 
         stage('SonarQube Analysis') {
             steps {
-
-                echo 'Running SonarQube Analysis'
 
                 withSonarQubeEnv('sonarqube') {
 
@@ -38,6 +62,7 @@ pipeline {
                     '''
 
                 }
+
             }
         }
 
@@ -46,8 +71,6 @@ pipeline {
 
             steps {
 
-                echo 'Checking SonarQube Quality Gate'
-
                 timeout(time: 5, unit: 'MINUTES') {
 
                     waitForQualityGate abortPipeline: true
@@ -55,6 +78,7 @@ pipeline {
                 }
 
             }
+
         }
 
     }
@@ -63,7 +87,7 @@ pipeline {
     post {
 
         success {
-            echo 'Pipeline completed successfully ✅'
+            echo 'All services build successful ✅'
         }
 
         failure {
