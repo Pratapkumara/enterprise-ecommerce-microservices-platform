@@ -1,0 +1,89 @@
+namespace: default
+
+images:
+
+  apiGateway:
+    repository: api-gateway
+    tag: "1.0"
+
+  product:
+    repository: product-service
+    tag: "1.0"
+
+  user:
+    repository: user-service
+    tag: "1.0"
+
+  inventory:
+    repository: inventory-service
+    tag: "1.1"
+
+  order:
+    repository: order-service
+    tag: "1.1"
+
+  payment:
+    repository: payment-service
+    tag: "1.2"
+
+  notification:
+    repository: notification-service
+    tag: "1.2"
+
+  discovery:
+    repository: discovery-server
+    tag: "1.0"
+
+  config:
+    repository: config-server
+    tag: "1.0"
+
+
+services:
+
+  apiGateway:
+    port: 8082
+
+  product:
+    port: 8084
+
+  user:
+    port: 8083
+
+  inventory:
+    port: 8086
+
+  order:
+    port: 8087
+
+  payment:
+    port: 8088
+
+  notification:
+    port: 8089
+
+  discovery:
+    port: 8761
+
+  config:
+    port: 8888
+
+
+# PostgreSQL Database
+postgresql:
+
+  enabled: true
+
+  auth:
+    postgresPassword: postgres
+    username: postgres
+    password: postgres
+    database: ecommerce
+
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+
+  service:
+    nameOverride: postgres

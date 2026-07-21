@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-gateway
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: api-gateway
+
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+
+    spec:
+      containers:
+
+      - name: api-gateway
+
+        image: "{{ .Values.images.apiGateway.repository }}:{{ .Values.images.apiGateway.tag }}"
+
+        imagePullPolicy: Never
+
+        ports:
+
+        - containerPort: {{ .Values.services.apiGateway.port }}
+
+        env:
+
+        - name: CONFIG_SERVER_URL
+          value: http://config-server:8888
+
+        - name: EUREKA_URL
+          value: http://discovery-server:8761/eureka

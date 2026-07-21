@@ -1,13 +1,10 @@
 # ==========================
-# Maven
-# ==========================
-target/
-
-# ==========================
 # IntelliJ IDEA
 # ==========================
 .idea/
 *.iml
+*.iws
+*.ipr
 
 # ==========================
 # VS Code
@@ -20,6 +17,18 @@ target/
 .project
 .classpath
 .settings/
+
+# ==========================
+# Maven / Gradle Build Files
+# ==========================
+target/
+**/target/
+build/
+**/build/
+
+# Spring Boot extracted files
+BOOT-INF/
+**/BOOT-INF/
 
 # ==========================
 # Logs
@@ -36,3 +45,31 @@ Thumbs.db
 # Temporary Files
 # ==========================
 *.tmp
+*.temp
+*.swp
+*.bak
+
+# ==========================
+# Docker
+# ==========================
+*.tar
+*.tar.gz
+
+# ==========================
+# Environment / Secrets
+# ==========================
+.env
+*.env
+
+# ==========================
+# Kubernetes Generated Files
+# ==========================
+*.yaml.bak
+*.backup
+output.yaml
+
+# ==========================
+# Helm
+# ==========================
+*.tgz
+charts/*.tgz

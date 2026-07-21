@@ -1,13 +1,12 @@
 server:
   port: 8082
 
-
 spring:
   application:
     name: api-gateway
 
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://config-server:8888
 
   cloud:
     gateway:
@@ -25,14 +24,12 @@ spring:
           filters:
             - RewritePath=/api/v1/users(?<segment>/?.*), /api/users${segment}
 
-
         - id: product-service
           uri: lb://product-service
           predicates:
             - Path=/api/v1/products/**
           filters:
             - RewritePath=/api/v1/products(?<segment>/?.*), /api/products${segment}
-
 
         - id: inventory-service
           uri: lb://inventory-service
@@ -41,14 +38,12 @@ spring:
           filters:
             - RewritePath=/api/v1/inventory(?<segment>/?.*), /api/inventory${segment}
 
-
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/v1/orders/**
           filters:
             - RewritePath=/api/v1/orders(?<segment>/?.*), /api/orders${segment}
-
 
         - id: payment-service
           uri: lb://payment-service
@@ -57,7 +52,6 @@ spring:
           filters:
             - RewritePath=/api/v1/payments(?<segment>/?.*), /api/payments${segment}
 
-
         - id: notification-service
           uri: lb://notification-service
           predicates:
@@ -65,13 +59,10 @@ spring:
           filters:
             - RewritePath=/api/v1/notifications(?<segment>/?.*), /api/notifications${segment}
 
-
-
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
-
+      defaultZone: http://discovery-server:8761/eureka/
 
 management:
   endpoints:
