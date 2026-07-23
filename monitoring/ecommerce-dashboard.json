@@ -57,7 +57,7 @@
       },
       "targets": [
         {
-          "expr": "sum(up{namespace=\"default\",job=~\"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server\"})",
+          "expr": "sum(max by(service) (up{namespace=\"default\",job=~\"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server\"}))",
           "refId": "A"
         }
       ],
@@ -128,7 +128,7 @@
       },
       "targets": [
         {
-          "expr": "up{namespace=\"default\",job=~\"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server\"}",
+          "expr": "max by(service) (up{namespace=\"default\",job=~\"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server\"})",
           "legendFormat": "{{service}}",
           "refId": "A"
         }
