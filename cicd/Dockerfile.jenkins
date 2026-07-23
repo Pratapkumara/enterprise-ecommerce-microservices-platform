@@ -1,0 +1,60 @@
+FROM jenkins/jenkins:lts-jdk21
+
+USER root
+
+ARG KUBECTL_VERSION=v1.35.1
+ARG HELM_VERSION=v3.21.3
+ARG MINIKUBE_VERSION=v1.38.1
+ARG TRIVY_VERSION=0.69.3
+
+RUN apt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    git \
+    gnupg \
+    jq \
+    maven \
+    unzip \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Docker CLI
+RUN install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg \
+       -o /etc/apt/keyrings/docker.asc \
+    && chmod a+r /etc/apt/keyrings/docker.asc \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" \
+       > /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get install -y docker-ce-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# kubectl
+RUN curl -fsSLo /usr/local/bin/kubectl \
+    "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+    && chmod +x /usr/local/bin/kubectl
+
+# Helm
+RUN curl -fsSLo /tmp/helm.tar.gz \
+    "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" \
+    && tar -xzf /tmp/helm.tar.gz -C /tmp \
+    && mv /tmp/linux-amd64/helm /usr/local/bin/helm \
+    && chmod +x /usr/local/bin/helm \
+    && rm -rf /tmp/helm.tar.gz /tmp/linux-amd64
+
+# Minikube
+RUN curl -fsSLo /usr/local/bin/minikube \
+    "https://github.com/kubernetes/minikube/releases/download/${MINIKUBE_VERSION}/minikube-linux-amd64" \
+    && chmod +x /usr/local/bin/minikube
+
+# Trivy
+RUN curl -fsSLo /tmp/trivy.deb \
+    "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb" \
+    && dpkg -i /tmp/trivy.deb \
+    && rm -f /tmp/trivy.deb
+
+RUN groupadd -for -g 109 docker \
+    && usermod -aG docker jenkins
+
+USER jenkins
