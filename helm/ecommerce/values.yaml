@@ -20,7 +20,7 @@ images:
 
   order:
     repository: order-service
-    tag: "1.1"
+    tag: "1.2"
 
   payment:
     repository: payment-service
@@ -32,11 +32,11 @@ images:
 
   discovery:
     repository: discovery-server
-    tag: "1.0"
+    tag: "1.1"
 
   config:
     repository: config-server
-    tag: "1.0"
+    tag: "1.1"
 
 
 services:
