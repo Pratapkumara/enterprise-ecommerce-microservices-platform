@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+
+  config:
+    import: "optional:configserver:"
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+jwt:
+  # Public fake test-only key; never used in production.
+  secret: dGVzdC1qd3Qtc2VjcmV0LWtleS1mb3ItY2ktdGVzdHMtMTIzNDU2Nzg5MA==
