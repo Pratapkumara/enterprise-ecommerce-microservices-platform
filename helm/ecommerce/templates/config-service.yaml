@@ -3,6 +3,8 @@ kind: Service
 
 metadata:
   name: config-server
+  labels:
+    monitoring: enabled
 
 spec:
 
@@ -12,6 +14,7 @@ spec:
   ports:
 
   - port: {{ .Values.services.config.port }}
+    name: http
 
     targetPort: {{ .Values.services.config.port }}
 

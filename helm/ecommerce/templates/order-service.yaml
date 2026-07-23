@@ -3,6 +3,8 @@ kind: Service
 
 metadata:
   name: order-service
+  labels:
+    monitoring: enabled
 
 spec:
 
@@ -12,6 +14,7 @@ spec:
   ports:
 
   - port: {{ .Values.services.order.port }}
+    name: http
 
     targetPort: {{ .Values.services.order.port }}
 

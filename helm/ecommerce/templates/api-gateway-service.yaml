@@ -3,6 +3,8 @@ kind: Service
 
 metadata:
   name: api-gateway
+  labels:
+    monitoring: enabled
 
 spec:
 
@@ -12,6 +14,7 @@ spec:
   ports:
 
   - port: {{ .Values.services.apiGateway.port }}
+    name: http
 
     targetPort: {{ .Values.services.apiGateway.port }}
 

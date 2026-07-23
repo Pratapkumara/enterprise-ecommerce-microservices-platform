@@ -1,0 +1,97 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: ecommerce-application-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: ecommerce.application.rules
+      rules:
+        - alert: EcommerceServiceMetricsDown
+          expr: up{namespace="default", job=~"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server"} == 0
+          for: 2m
+          labels:
+            severity: critical
+            application: ecommerce
+          annotations:
+            summary: "E-commerce service metrics are down"
+            description: "{{ $labels.service }} metrics endpoint has been unavailable for more than 2 minutes."
+
+        - alert: EcommerceDeploymentUnavailable
+          expr: |
+            kube_deployment_status_replicas_available{
+              namespace="default",
+              deployment=~"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server"
+            }
+            <
+            kube_deployment_spec_replicas{
+              namespace="default",
+              deployment=~"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server"
+            }
+          for: 2m
+          labels:
+            severity: critical
+            application: ecommerce
+          annotations:
+            summary: "E-commerce deployment is unavailable"
+            description: "{{ $labels.deployment }} does not have all required replicas available."
+
+        - alert: EcommercePodRestartingFrequently
+          expr: |
+            increase(kube_pod_container_status_restarts_total{
+              namespace="default",
+              pod=~"(api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server)-.*"
+            }[10m]) > 2
+          for: 1m
+          labels:
+            severity: warning
+            application: ecommerce
+          annotations:
+            summary: "E-commerce pod is restarting frequently"
+            description: "{{ $labels.pod }} restarted more than twice during the last 10 minutes."
+
+        - alert: EcommerceHighJvmHeapUsage
+          expr: |
+            (
+              sum by (service) (
+                jvm_memory_used_bytes{
+                  namespace="default",
+                  area="heap",
+                  service=~"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server"
+                }
+              )
+              /
+              sum by (service) (
+                jvm_memory_max_bytes{
+                  namespace="default",
+                  area="heap",
+                  service=~"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server"
+                }
+              )
+            ) > 0.85
+          for: 5m
+          labels:
+            severity: warning
+            application: ecommerce
+          annotations:
+            summary: "High JVM heap usage"
+            description: "{{ $labels.service }} JVM heap usage has remained above 85% for 5 minutes."
+
+        - alert: EcommerceHttpServerErrors
+          expr: |
+            sum by (service) (
+              rate(http_server_requests_seconds_count{
+                namespace="default",
+                outcome="SERVER_ERROR",
+                service=~"api-gateway|user-service|product-service|inventory-service|payment-service|notification-service|order-service|config-server|discovery-server"
+              }[5m])
+            ) > 0.1
+          for: 2m
+          labels:
+            severity: warning
+            application: ecommerce
+          annotations:
+            summary: "High HTTP 5xx error rate"
+            description: "{{ $labels.service }} is returning more than 0.1 server errors per second."
