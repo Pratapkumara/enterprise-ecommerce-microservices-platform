@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="
-         https://maven.apache.org/POM/4.0.0
-         https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+         xsi:schemaLocation="https://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -17,7 +13,6 @@
         <relativePath/>
     </parent>
 
-
     <groupId>com.pratap.enterprise</groupId>
     <artifactId>payment-service</artifactId>
     <version>1.0.0</version>
@@ -25,19 +20,14 @@
     <name>payment-service</name>
     <description>Enterprise E-Commerce Payment Service</description>
 
-
     <properties>
-
         <java.version>21</java.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
-
-
     <dependencies>
-
 
         <!-- REST API -->
         <dependency>
@@ -45,15 +35,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-
-
         <!-- JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-
-
 
         <!-- Validation -->
         <dependency>
@@ -61,23 +47,25 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
-
-
-        <!-- PostgreSQL -->
+        <!-- Production PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
+        <!-- In-memory Database for Tests Only -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-
-        <!-- Config Server -->
+        <!-- Config Server Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
-
-
 
         <!-- Eureka Client -->
         <dependency>
@@ -85,15 +73,11 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
-
-
         <!-- OpenFeign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
-
-
 
         <!-- Actuator -->
         <dependency>
@@ -101,15 +85,11 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-
-
         <!-- Prometheus Registry -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
-
-
 
         <!-- Lombok -->
         <dependency>
@@ -118,16 +98,12 @@
             <optional>true</optional>
         </dependency>
 
-
-
         <!-- MapStruct -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>${mapstruct.version}</version>
         </dependency>
-
-
 
         <!-- MapStruct Processor -->
         <dependency>
@@ -137,8 +113,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -146,20 +120,11 @@
             <scope>test</scope>
         </dependency>
 
-
-
     </dependencies>
 
-
-
-
-
     <dependencyManagement>
-
         <dependencies>
 
-
-            <!-- Spring Cloud BOM -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -168,73 +133,41 @@
                 <scope>import</scope>
             </dependency>
 
-
         </dependencies>
-
     </dependencyManagement>
 
-
-
-
-
     <build>
-
         <plugins>
 
-
-
-            <!-- Spring Boot Executable Jar -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-
-
-
-            <!-- Java 21 + Lombok + MapStruct -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
 
                 <configuration>
-
-                    <source>21</source>
-                    <target>21</target>
-
+                    <release>${java.version}</release>
 
                     <annotationProcessorPaths>
-
-
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.38</version>
+                            <version>${lombok.version}</version>
                         </path>
-
-
 
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
                             <version>${mapstruct.version}</version>
                         </path>
-
-
                     </annotationProcessorPaths>
-
-
                 </configuration>
-
             </plugin>
 
-
-
         </plugins>
-
-
     </build>
-
-
 
 </project>
