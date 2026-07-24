@@ -4,39 +4,39 @@ images:
 
   apiGateway:
     repository: api-gateway
-    tag: "1.0"
+    tag: "build-6"
 
   product:
     repository: product-service
-    tag: "1.0"
+    tag: "build-6"
 
   user:
     repository: user-service
-    tag: "1.0"
+    tag: "build-6"
 
   inventory:
     repository: inventory-service
-    tag: "1.1"
+    tag: "build-6"
 
   order:
     repository: order-service
-    tag: "1.2"
+    tag: "build-6"
 
   payment:
     repository: payment-service
-    tag: "1.2"
+    tag: "build-6"
 
   notification:
     repository: notification-service
-    tag: "1.2"
+    tag: "build-6"
 
   discovery:
     repository: discovery-server
-    tag: "1.1"
+    tag: "build-6"
 
   config:
     repository: config-server
-    tag: "1.1"
+    tag: "build-6"
 
 
 services:
