@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/inventory")
@@ -26,6 +28,13 @@ public class InventoryController {
             @RequestBody InventoryRequest request) {
 
         return service.createInventory(request);
+    }
+
+
+    @GetMapping
+    public List<InventoryResponse> getAllInventory() {
+
+        return service.getAllInventory();
     }
 
 

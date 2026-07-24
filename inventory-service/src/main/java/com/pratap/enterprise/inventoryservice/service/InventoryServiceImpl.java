@@ -9,6 +9,8 @@ import com.pratap.enterprise.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class InventoryServiceImpl implements InventoryService {
@@ -25,6 +27,16 @@ public class InventoryServiceImpl implements InventoryService {
         Inventory saved = repository.save(inventory);
 
         return InventoryMapper.toResponse(saved);
+    }
+
+
+    @Override
+    public List<InventoryResponse> getAllInventory() {
+
+        return repository.findAll()
+                .stream()
+                .map(InventoryMapper::toResponse)
+                .toList();
     }
 
 

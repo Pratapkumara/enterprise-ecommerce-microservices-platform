@@ -1,34 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-
 metadata:
   name: ecommerce-ingress
-
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-
+  labels:
+    app: ecommerce
 spec:
-
   ingressClassName: nginx
-
   rules:
-
-  - host: ecommerce.local
-
-    http:
-
-      paths:
-
-      - path: /
-
-        pathType: Prefix
-
-        backend:
-
-          service:
-
-            name: api-gateway
-
-            port:
-
-              number: {{ .Values.services.apiGateway.port }}
+    - host: ecommerce.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: {{ .Values.services.apiGateway.port }}
