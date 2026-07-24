@@ -20,7 +20,7 @@ spec:
       containers:
         - name: user-service
 
-          image: "user-service:1.1"
+          image: "{{ .Values.images.user.repository }}:{{ .Values.images.user.tag }}"
           imagePullPolicy: Never
 
           ports:
