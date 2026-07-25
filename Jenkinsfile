@@ -31,7 +31,7 @@ pipeline {
                     set -eu
 
                     echo "Commit: $(git rev-parse --short HEAD)"
-                    echo "Branch: $(git branch --show-current)"
+                    echo "Branch: ${BRANCH_NAME:-detached}"
                     echo "Image tag: ${IMAGE_TAG}"
                 '''
             }
@@ -44,7 +44,8 @@ pipeline {
 
                     java -version
                     mvn -version
-                    docker version --format 'Docker {{.Client.Version}}'
+                    docker version \
+                      --format 'Docker {{.Client.Version}}'
                     trivy --version
                     kubectl version --client
                     helm version --short
@@ -56,7 +57,8 @@ pipeline {
                       --format='{{.State.Running}}' |
                       grep -q true
 
-                    docker exec minikube docker info >/dev/null
+                    docker exec minikube \
+                      docker info >/dev/null
 
                     curl -fsS \
                       http://sonarqube:9000/api/system/status
@@ -102,6 +104,18 @@ pipeline {
 
                     for (String service : services) {
                         withEnv(["CURRENT_SERVICE=${service}"]) {
+
+                            sh '''
+                                set -eu
+
+                                find . \
+                                  -type f \
+                                  -path "*/target/sonar/report-task.txt" \
+                                  -delete
+
+                                echo "Cleared previous Sonar task metadata"
+                            '''
+
                             withSonarQubeEnv('sonarqube') {
                                 sh '''
                                     set -eu
@@ -115,13 +129,23 @@ pipeline {
                                       "org.sonarsource.scanner.maven:sonar-maven-plugin:${SONAR_MAVEN_PLUGIN_VERSION}:sonar" \
                                       -Dsonar.projectKey="enterprise-ecommerce-${CURRENT_SERVICE}" \
                                       -Dsonar.projectName="Enterprise E-commerce - ${CURRENT_SERVICE}" \
-                                      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                                      -Dsonar.token="${SONAR_AUTH_TOKEN}"
+                                      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                                 '''
                             }
 
-                            timeout(time: 10, unit: 'MINUTES') {
-                                waitForQualityGate abortPipeline: true
+                            timeout(
+                                time: 10,
+                                unit: 'MINUTES'
+                            ) {
+                                def qualityGate =
+                                    waitForQualityGate(
+                                        abortPipeline: true
+                                    )
+
+                                echo(
+                                    "${service} Quality Gate: " +
+                                    "${qualityGate.status}"
+                                )
                             }
                         }
                     }
@@ -209,7 +233,8 @@ pipeline {
                     echo "Verifying imported images..."
 
                     for service in ${SERVICES}; do
-                        docker exec minikube docker image inspect \
+                        docker exec minikube \
+                          docker image inspect \
                           "${service}:${IMAGE_TAG}" \
                           >/dev/null
                     done
@@ -277,7 +302,8 @@ pipeline {
                         set -eu
 
                         git config user.name "Jenkins CI"
-                        git config user.email "jenkins@enterprise-ecommerce.local"
+                        git config user.email \
+                          "jenkins@enterprise-ecommerce.local"
 
                         git add helm/ecommerce/values.yaml
 
@@ -355,13 +381,15 @@ pipeline {
 
                     for attempt in $(seq 1 30); do
                         sync_status=$(
-                            kubectl get application "${ARGO_APPLICATION}" \
+                            kubectl get application \
+                              "${ARGO_APPLICATION}" \
                               -n "${ARGO_NAMESPACE}" \
                               -o jsonpath='{.status.sync.status}'
                         )
 
                         health_status=$(
-                            kubectl get application "${ARGO_APPLICATION}" \
+                            kubectl get application \
+                              "${ARGO_APPLICATION}" \
                               -n "${ARGO_NAMESPACE}" \
                               -o jsonpath='{.status.health.status}'
                         )
@@ -413,7 +441,8 @@ pipeline {
                         echo "========================================"
 
                         for attempt in $(seq 1 30); do
-                            if kubectl exec deployment/"${service}" -- \
+                            if kubectl exec \
+                              deployment/"${service}" -- \
                               curl -fsS \
                               "http://localhost:${port}/actuator/health" \
                               >/dev/null 2>&1; then
@@ -454,7 +483,10 @@ pipeline {
         }
 
         failure {
-            echo 'CI/CD pipeline failed. Check the failed stage logs.'
+            echo(
+                'CI/CD pipeline failed. ' +
+                'Check the failed stage logs.'
+            )
         }
 
         always {
@@ -479,7 +511,8 @@ pipeline {
                       >/dev/null 2>&1 || true
                 done
 
-                docker image prune -f >/dev/null 2>&1 || true
+                docker image prune -f \
+                  >/dev/null 2>&1 || true
             '''
 
             cleanWs(
