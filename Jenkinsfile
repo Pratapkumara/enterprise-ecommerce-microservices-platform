@@ -357,6 +357,7 @@ pipeline {
 
                         if [ "${sync_status}" = "Synced" ] &&
                            [ "${health_status}" = "Healthy" ]; then
+
                             application_healthy=true
                             break
                         fi
@@ -391,13 +392,40 @@ pipeline {
                     do
                         service="${service_port%:*}"
                         port="${service_port#*:}"
+                        healthy=false
 
-                        echo "Checking ${service}..."
+                        echo "========================================"
+                        echo "Checking ${service}:${port}"
+                        echo "========================================"
 
-                        kubectl exec deployment/"${service}" -- \
-                          curl -fsS \
-                          "http://localhost:${port}/actuator/health" \
-                          >/dev/null
+                        for attempt in $(seq 1 30); do
+                            if kubectl exec deployment/"${service}" -- \
+                              curl -fsS \
+                              "http://localhost:${port}/actuator/health" \
+                              >/dev/null 2>&1; then
+
+                                echo "${service} is healthy"
+                                healthy=true
+                                break
+                            fi
+
+                            echo "Attempt ${attempt}/30: ${service} is not ready"
+                            sleep 10
+                        done
+
+                        if [ "${healthy}" != "true" ]; then
+                            echo "ERROR: ${service} failed its health check"
+
+                            kubectl get pods \
+                              -l "app=${service}" \
+                              -o wide || true
+
+                            kubectl logs \
+                              deployment/"${service}" \
+                              --tail=100 || true
+
+                            exit 1
+                        fi
                     done
 
                     echo "All service health checks passed"
