@@ -1,0 +1,41 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: user-service-test
+
+  config:
+    import: "optional:configserver:"
+
+  cloud:
+    config:
+      enabled: false
+
+  datasource:
+    url: jdbc:h2:mem:userdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    show-sql: false
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+jwt:
+  secret: testOnlyJwtSecretKeyForUnitTesting1234567890
+  expiration: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
