@@ -99,7 +99,7 @@ pipeline {
                                       -B \
                                       -ntp \
                                       -f "${CURRENT_SERVICE}/pom.xml" \
-                                      sonar:sonar \
+                                      org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
                                       -Dsonar.projectKey="enterprise-ecommerce-${CURRENT_SERVICE}" \
                                       -Dsonar.projectName="Enterprise E-commerce - ${CURRENT_SERVICE}" \
                                       -Dsonar.token="${SONAR_AUTH_TOKEN}"
@@ -320,7 +320,7 @@ pipeline {
                             break
                         fi
 
-                        echo "Attempt ${attempt}/60: waiting for new images..."
+                        echo "Attempt ${attempt}/60: waiting for images..."
                         sleep 10
                     done
 
@@ -337,23 +337,38 @@ pipeline {
                           --timeout=300s
                     done
 
-                    sync_status=$(
-                        kubectl get application "${ARGO_APPLICATION}" \
-                          -n "${ARGO_NAMESPACE}" \
-                          -o jsonpath='{.status.sync.status}'
-                    )
+                    application_healthy=false
 
-                    health_status=$(
-                        kubectl get application "${ARGO_APPLICATION}" \
-                          -n "${ARGO_NAMESPACE}" \
-                          -o jsonpath='{.status.health.status}'
-                    )
+                    for attempt in $(seq 1 30); do
+                        sync_status=$(
+                            kubectl get application "${ARGO_APPLICATION}" \
+                              -n "${ARGO_NAMESPACE}" \
+                              -o jsonpath='{.status.sync.status}'
+                        )
 
-                    echo "Argo CD sync: ${sync_status}"
-                    echo "Argo CD health: ${health_status}"
+                        health_status=$(
+                            kubectl get application "${ARGO_APPLICATION}" \
+                              -n "${ARGO_NAMESPACE}" \
+                              -o jsonpath='{.status.health.status}'
+                        )
 
-                    test "${sync_status}" = "Synced"
-                    test "${health_status}" = "Healthy"
+                        echo "Argo CD sync: ${sync_status}"
+                        echo "Argo CD health: ${health_status}"
+
+                        if [ "${sync_status}" = "Synced" ] &&
+                           [ "${health_status}" = "Healthy" ]; then
+                            application_healthy=true
+                            break
+                        fi
+
+                        echo "Waiting for Argo CD health..."
+                        sleep 10
+                    done
+
+                    if [ "${application_healthy}" != "true" ]; then
+                        echo "Argo CD application did not become healthy"
+                        exit 1
+                    fi
                 '''
             }
         }
