@@ -14,6 +14,8 @@ pipeline {
     environment {
         SERVICES = 'config-server discovery-server api-gateway user-service product-service inventory-service order-service payment-service notification-service'
         IMAGE_TAG = "build-${BUILD_NUMBER}"
+        JACOCO_VERSION = '0.8.13'
+        SONAR_MAVEN_PLUGIN_VERSION = '5.7.0.6970'
         GIT_REPOSITORY = 'github.com/Pratapkumara/enterprise-ecommerce-microservices-platform.git'
         ARGO_APPLICATION = 'ecommerce-platform'
         ARGO_NAMESPACE = 'argocd'
@@ -62,21 +64,32 @@ pipeline {
             }
         }
 
-        stage('Build and Test') {
+        stage('Build Test and Coverage') {
             steps {
                 sh '''
                     set -eu
 
                     for service in ${SERVICES}; do
                         echo "========================================"
-                        echo "Building and testing ${service}"
+                        echo "Building, testing and covering ${service}"
                         echo "========================================"
 
                         mvn \
                           -B \
                           -ntp \
                           -f "${service}/pom.xml" \
-                          clean verify
+                          clean \
+                          "org.jacoco:jacoco-maven-plugin:${JACOCO_VERSION}:prepare-agent" \
+                          verify \
+                          "org.jacoco:jacoco-maven-plugin:${JACOCO_VERSION}:report"
+
+                        report="${service}/target/site/jacoco/jacoco.xml"
+
+                        if [ -f "${report}" ]; then
+                            echo "JaCoCo report generated: ${report}"
+                        else
+                            echo "No JaCoCo report for ${service}; no tests may exist"
+                        fi
                     done
                 '''
             }
@@ -99,9 +112,10 @@ pipeline {
                                       -B \
                                       -ntp \
                                       -f "${CURRENT_SERVICE}/pom.xml" \
-                                      org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
+                                      "org.sonarsource.scanner.maven:sonar-maven-plugin:${SONAR_MAVEN_PLUGIN_VERSION}:sonar" \
                                       -Dsonar.projectKey="enterprise-ecommerce-${CURRENT_SERVICE}" \
                                       -Dsonar.projectName="Enterprise E-commerce - ${CURRENT_SERVICE}" \
+                                      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                                       -Dsonar.token="${SONAR_AUTH_TOKEN}"
                                 '''
                             }
@@ -447,6 +461,11 @@ pipeline {
             junit(
                 testResults: '**/target/surefire-reports/*.xml',
                 allowEmptyResults: true
+            )
+
+            archiveArtifacts(
+                artifacts: '**/target/site/jacoco/jacoco.xml',
+                allowEmptyArchive: true
             )
 
             sh '''
