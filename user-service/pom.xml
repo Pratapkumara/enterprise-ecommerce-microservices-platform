@@ -23,6 +23,15 @@
         <java.version>17</java.version>
         <spring-cloud.version>2025.0.3</spring-cloud.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <jacoco.version>0.8.13</jacoco.version>
+
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.build.directory}/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+
+        <sonar.junit.reportPaths>
+            ${project.build.directory}/surefire-reports
+        </sonar.junit.reportPaths>
     </properties>
 
     <dependencies>
@@ -42,7 +51,9 @@
         <!-- Eureka Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <artifactId>
+                spring-cloud-starter-netflix-eureka-client
+            </artifactId>
         </dependency>
 
         <!-- Config Client -->
@@ -167,8 +178,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
 
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
 
                     <annotationProcessorPaths>
                         <path>
@@ -184,6 +195,29 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>generate-jacoco-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
