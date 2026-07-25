@@ -49,7 +49,15 @@ pipeline {
 
                     docker ps >/dev/null
                     kubectl get nodes
-                    curl -fsS http://sonarqube:9000/api/system/status
+
+                    docker inspect minikube \
+                      --format='{{.State.Running}}' |
+                      grep -q true
+
+                    docker exec minikube docker info >/dev/null
+
+                    curl -fsS \
+                      http://sonarqube:9000/api/system/status
                 '''
             }
         }
@@ -175,13 +183,24 @@ pipeline {
                         image="${service}:${IMAGE_TAG}"
 
                         echo "========================================"
-                        echo "Importing ${image} into Minikube"
+                        echo "Importing ${image} into Minikube Docker"
                         echo "========================================"
 
                         docker save "${image}" |
-                        docker exec -i minikube \
-                          ctr -n k8s.io images import -
+                          docker exec -i minikube docker load
+
+                        docker image rm "${image}"
                     done
+
+                    echo "Verifying imported images..."
+
+                    for service in ${SERVICES}; do
+                        docker exec minikube docker image inspect \
+                          "${service}:${IMAGE_TAG}" \
+                          >/dev/null
+                    done
+
+                    echo "All ${IMAGE_TAG} images imported successfully"
                 '''
             }
         }
@@ -210,14 +229,21 @@ pipeline {
                 sh '''
                     set -eu
 
+                    rendered_file="$WORKSPACE/ecommerce-rendered.yaml"
+
                     helm lint helm/ecommerce
+
                     helm template ecommerce helm/ecommerce \
-                      > /tmp/ecommerce-rendered.yaml
+                      > "${rendered_file}"
 
                     for service in ${SERVICES}; do
-                        grep -q \
+                        if ! grep -q \
                           "image: \\"${service}:${IMAGE_TAG}\\"" \
-                          /tmp/ecommerce-rendered.yaml
+                          "${rendered_file}"; then
+
+                            echo "ERROR: ${service}:${IMAGE_TAG} was not found"
+                            exit 1
+                        fi
                     done
 
                     echo "All rendered images use ${IMAGE_TAG}"
@@ -250,6 +276,7 @@ pipeline {
                           "chore: deploy ${IMAGE_TAG} [skip ci]"
 
                         set +x
+
                         git push \
                           "https://x-access-token:${GITHUB_TOKEN}@${GIT_REPOSITORY}" \
                           HEAD:main
@@ -303,6 +330,8 @@ pipeline {
                     fi
 
                     for service in ${SERVICES}; do
+                        echo "Waiting for ${service} rollout..."
+
                         kubectl rollout status \
                           deployment/"${service}" \
                           --timeout=300s
@@ -376,6 +405,20 @@ pipeline {
                 testResults: '**/target/surefire-reports/*.xml',
                 allowEmptyResults: true
             )
+
+            sh '''
+                set +e
+
+                echo "Cleaning host images for ${IMAGE_TAG}..."
+
+                for service in ${SERVICES}; do
+                    docker image rm \
+                      "${service}:${IMAGE_TAG}" \
+                      >/dev/null 2>&1 || true
+                done
+
+                docker image prune -f >/dev/null 2>&1 || true
+            '''
 
             cleanWs(
                 deleteDirs: true,
