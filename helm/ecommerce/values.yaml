@@ -4,39 +4,39 @@ images:
 
   apiGateway:
     repository: api-gateway
-    tag: "build-21"
+    tag: "build-22"
 
   product:
     repository: product-service
-    tag: "build-21"
+    tag: "build-22"
 
   user:
     repository: user-service
-    tag: "build-21"
+    tag: "build-22"
 
   inventory:
     repository: inventory-service
-    tag: "build-21"
+    tag: "build-22"
 
   order:
     repository: order-service
-    tag: "build-21"
+    tag: "build-22"
 
   payment:
     repository: payment-service
-    tag: "build-21"
+    tag: "build-22"
 
   notification:
     repository: notification-service
-    tag: "build-21"
+    tag: "build-22"
 
   discovery:
     repository: discovery-server
-    tag: "build-21"
+    tag: "build-22"
 
   config:
     repository: config-server
-    tag: "build-21"
+    tag: "build-22"
 
 
 services:
