@@ -272,6 +272,9 @@ a { color: inherit; text-decoration: none; }
 .products-section { max-width: 1272px; margin: 76px auto 0; scroll-margin-top: 20px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 26px; }
 .section-heading h2 { margin: 0; color: var(--navy); font-size: 34px; letter-spacing: -.045em; }
+.catalogue-status { margin: 9px 0 0; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; font-weight: 650; }
+.catalogue-status span { width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; }
+.catalogue-status.live span { background: var(--green); box-shadow: 0 0 0 4px rgba(22,163,74,.1); }
 .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .filter-pills button { border: 1px solid var(--border); background: #fff; color: #526078; padding: 9px 14px; border-radius: 24px; font-size: 12px; font-weight: 650; }
 .filter-pills button:hover, .filter-pills button.active { background: var(--navy); border-color: var(--navy); color: #fff; }

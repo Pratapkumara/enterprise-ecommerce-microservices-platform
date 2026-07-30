@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Product = {
   id: number;
@@ -15,7 +15,7 @@ type Product = {
   badge?: string;
 };
 
-const products: Product[] = [
+const demoProducts: Product[] = [
   { id: 1, name: "Enterprise Laptop Pro", category: "Electronics", price: 74999, oldPrice: 89999, rating: 4.8, reviews: 284, icon: "💻", tone: "blue", badge: "Bestseller" },
   { id: 2, name: "Nova 5G Smartphone", category: "Mobiles", price: 32999, oldPrice: 39999, rating: 4.7, reviews: 618, icon: "📱", tone: "violet", badge: "New" },
   { id: 3, name: "Studio Wireless Headphones", category: "Electronics", price: 4999, oldPrice: 7999, rating: 4.6, reviews: 423, icon: "🎧", tone: "slate", badge: "38% off" },
@@ -32,12 +32,82 @@ const money = (value: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value);
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>(demoProducts);
+  const [catalogueSource, setCatalogueSource] = useState<"live" | "demo">("demo");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All");
   const [cart, setCart] = useState<number[]>([]);
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadProducts = async () => {
+      try {
+        const response = await fetch("/api/v1/products", {
+          headers: { Accept: "application/json" },
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Product API returned HTTP ${response.status}`);
+        }
+
+        const payload = (await response.json()) as Array<{
+          id: number;
+          name: string;
+          category?: string;
+          price: number;
+          active?: boolean;
+        }>;
+
+        const liveProducts = payload
+          .filter((product) => product.active !== false)
+          .map((product, index): Product => {
+            const category = product.category || "Electronics";
+            const presentation: Record<string, { icon: string; tone: string }> = {
+              Electronics: { icon: index % 2 === 0 ? "💻" : "🎧", tone: "blue" },
+              Mobiles: { icon: "📱", tone: "violet" },
+              Fashion: { icon: "🎒", tone: "yellow" },
+              Home: { icon: "💡", tone: "cyan" },
+              Appliances: { icon: "⚙️", tone: "green" },
+              Beauty: { icon: "✨", tone: "rose" },
+            };
+            const visual = presentation[category] || { icon: "📦", tone: "slate" };
+
+            return {
+              id: product.id,
+              name: product.name,
+              category,
+              price: Number(product.price),
+              oldPrice: Math.round(Number(product.price) * 1.18),
+              rating: 4.6 + (index % 3) * 0.1,
+              reviews: 120 + product.id * 37,
+              icon: visual.icon,
+              tone: visual.tone,
+              badge: index === 0 ? "Live catalogue" : undefined,
+            };
+          });
+
+        if (liveProducts.length > 0) {
+          setProducts(liveProducts);
+          setCatalogueSource("live");
+        }
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          console.warn("Product API unavailable; using demo catalogue.");
+          setProducts(demoProducts);
+          setCatalogueSource("demo");
+        }
+      }
+    };
+
+    void loadProducts();
+
+    return () => controller.abort();
+  }, []);
 
   const visibleProducts = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -156,6 +226,12 @@ export default function Home() {
           <div>
             <p className="eyebrow">Curated for you</p>
             <h2>{query ? `Results for “${query}”` : category === "All" ? "Trending deals" : category}</h2>
+            <p className={`catalogue-status ${catalogueSource}`}>
+              <span />
+              {catalogueSource === "live"
+                ? "Live inventory from Product Service"
+                : "Demo catalogue · API fallback active"}
+            </p>
           </div>
           <div className="filter-pills" aria-label="Filter products">
             {categories.slice(0, 5).map((item) => (
