@@ -1,297 +1,454 @@
-# 🚀 Enterprise E-Commerce Microservices Platform
+# Enterprise E-Commerce Microservices Platform
 
-<p align="center">
+[![Java](https://img.shields.io/badge/Java-17%20%7C%2021-orange?logo=openjdk)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.15-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Deployed-326CE5?logo=kubernetes)](https://kubernetes.io/)
+[![Helm](https://img.shields.io/badge/Helm-1.0.0-0F1689?logo=helm)](https://helm.sh/)
+[![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?logo=jenkins)](https://www.jenkins.io/)
+[![Argo CD](https://img.shields.io/badge/Argo%20CD-GitOps-EF7B4D?logo=argo)](https://argo-cd.readthedocs.io/)
+[![SonarQube](https://img.shields.io/badge/SonarQube-100%25%20Coverage-4E9BCD?logo=sonarqube)](https://www.sonarsource.com/products/sonarqube/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana)](https://grafana.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql)](https://www.postgresql.org/)
 
-![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=for-the-badge&logo=springboot)
-![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024-blue?style=for-the-badge)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-Deployed-326CE5?style=for-the-badge&logo=kubernetes)
-![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-D24939?style=for-the-badge&logo=jenkins)
-![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-E6522C?style=for-the-badge&logo=prometheus)
-![Grafana](https://img.shields.io/badge/Grafana-Dashboard-F46800?style=for-the-badge&logo=grafana)
-![SonarQube](https://img.shields.io/badge/SonarQube-Code%20Quality-4E9BCD?style=for-the-badge&logo=sonarqube)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?style=for-the-badge&logo=postgresql)
+A production-style e-commerce backend built with Spring Boot microservices and a complete DevSecOps delivery platform.
 
-</p>
+The project demonstrates service discovery, centralized configuration, JWT security, synchronous service communication, PostgreSQL persistence, automated testing, static analysis, container security scanning, Kubernetes orchestration, Helm packaging, Argo CD GitOps deployment, and full-stack observability.
 
----
+## Project Status
 
-# 📖 Project Overview
+| Area | Result |
+|---|---|
+| Microservices | 9 services deployed |
+| Latest verified release | `build-22` |
+| Jenkins pipeline | Passed |
+| Argo CD | Synced and Healthy |
+| SonarQube Quality Gates | 9/9 Passed |
+| Test coverage | 100% across all projects |
+| Bugs | 0 |
+| Vulnerabilities | 0 |
+| Code smells | 0 |
+| Security review | A |
+| Duplications | 0.0% |
+| Kubernetes health checks | 9/9 Passed |
+| Trivy critical vulnerability gate | Passed |
+| Public API smoke test | HTTP 200 |
 
-Enterprise E-Commerce Microservices Platform is a production-style backend application developed using **Spring Boot Microservices** and modern **DevOps** practices.
+## Architecture
 
-The project demonstrates how large enterprise applications are designed using independent microservices, centralized configuration, service discovery, API Gateway, containerization, monitoring, CI/CD, and Kubernetes.
+```mermaid
+flowchart TB
+    Client["Web / API Client"] --> Nginx["NGINX Reverse Proxy"]
+    Nginx --> Ingress["Kubernetes Ingress"]
+    Ingress --> Gateway["API Gateway"]
 
-Each business capability is developed as an independent Spring Boot service, making the application highly scalable, maintainable, fault-tolerant, and cloud-ready.
+    Gateway --> User["User Service"]
+    Gateway --> Product["Product Service"]
+    Gateway --> Inventory["Inventory Service"]
+    Gateway --> Order["Order Service"]
 
-This project follows real enterprise architecture used in modern software companies.
+    Order --> Product
+    Order --> Payment["Payment Service"]
+    Order --> Notification["Notification Service"]
 
----
+    User --> PostgreSQL["PostgreSQL"]
+    Product --> PostgreSQL
+    Inventory --> PostgreSQL
+    Order --> PostgreSQL
+    Payment --> PostgreSQL
+    Notification --> PostgreSQL
 
-# 🎯 Objectives
+    Config["Config Server"] -. centralized configuration .-> Gateway
+    Config -.-> User
+    Config -.-> Product
+    Config -.-> Inventory
+    Config -.-> Order
+    Config -.-> Payment
+    Config -.-> Notification
 
-- Build scalable Spring Boot Microservices
-- Implement JWT Authentication & Authorization
-- Centralize configuration using Spring Cloud Config
-- Service Discovery using Eureka
-- API Routing using Spring Cloud Gateway
-- Containerize every service using Docker
-- Build Jenkins CI/CD Pipeline
-- Monitor application using Prometheus & Grafana
-- Configure Alertmanager
-- Deploy complete platform on Kubernetes
-- Follow Enterprise DevOps practices
-
----
-
-# ✨ Features
-
-## Authentication
-
-- JWT Authentication
-- User Registration
-- User Login
-- Role Based Authentication
-- BCrypt Password Encryption
-- Stateless Security
-
----
-
-## Product Module
-
-- Add Product
-- Update Product
-- Delete Product
-- View Products
-- Category Support
-- Quantity Management
-
----
-
-## Inventory Module
-
-- Inventory Tracking
-- Stock Availability
-- Inventory Updates
-- Database Synchronization
-
----
-
-## Order Module
-
-- Create Order
-- Order Management
-- Order Processing
-- Product Validation
-
----
-
-## Payment Module
-
-- Payment Processing
-- Payment Status
-- Database Storage
-
----
-
-## Notification Module
-
-- Notification Service
-- Service Communication
-- Event Processing
-
----
-
-## Cloud Features
-
-- Spring Cloud Config Server
-- Eureka Service Discovery
-- API Gateway
-- Centralized Configuration
-- Dynamic Service Registration
-
----
-
-## DevOps Features
-
-- Docker Containerization
-- Docker Compose
-- Jenkins CI/CD
-- SonarQube Code Analysis
-- Prometheus Monitoring
-- Grafana Dashboards
-- Alertmanager Alerts
-- Kubernetes Deployment
-
----
-
-# 🏗️ System Architecture
-
-```
-                    Client
-                       │
-                       ▼
-               API Gateway
-                       │
-      ┌────────────────┼────────────────┐
-      ▼                ▼                ▼
- User Service    Product Service   Inventory Service
-      │                │                │
-      └────────────┐   │                │
-                   ▼   ▼                ▼
-             Order Service       Payment Service
-                   │
-                   ▼
-          Notification Service
-
-                   │
-                   ▼
-              PostgreSQL Database
-
-────────────────────────────────────────────
-
-Config Server
-       ▲
-       │
-All Microservices
-
-────────────────────────────────────────────
-
-Eureka Discovery Server
-       ▲
-       │
-All Services Register
-
-────────────────────────────────────────────
-
-Jenkins
-      │
-Docker Build
-      │
-Docker Images
-      │
-Kubernetes Deployment
-
-────────────────────────────────────────────
-
-Prometheus
-      │
-Grafana
-      │
-Alertmanager
+    Discovery["Eureka Discovery Server"] -. service registration .-> Gateway
+    Discovery -.-> User
+    Discovery -.-> Product
+    Discovery -.-> Inventory
+    Discovery -.-> Order
+    Discovery -.-> Payment
+    Discovery -.-> Notification
 ```
 
----
+## Microservices
 
-# 🛠️ Technology Stack
+| Service | Port | Responsibility |
+|---|---:|---|
+| Config Server | 8888 | Centralized externalized configuration |
+| Discovery Server | 8761 | Eureka service registration and discovery |
+| API Gateway | 8082 | Routing, edge security, and API entry point |
+| User Service | 8083 | Registration, authentication, users, roles, and JWT |
+| Product Service | 8084 | Product catalog and product CRUD |
+| Inventory Service | 8086 | Stock, reservation, and release operations |
+| Order Service | 8087 | Order creation, totals, orchestration, and status |
+| Payment Service | 8088 | Payment processing and transaction records |
+| Notification Service | 8089 | User and order notifications |
 
-## Backend
+## Core Business Flow
 
-- Java 21
-- Spring Boot
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Gateway
+    participant Order
+    participant Product
+    participant Payment
+    participant Notification
+
+    Client->>Gateway: Create order
+    Gateway->>Order: Forward request
+    Order->>Product: Fetch product and price
+    Product-->>Order: Product details
+    Order->>Order: Calculate total and save
+    Order->>Payment: Process payment
+    Payment-->>Order: Payment result
+    Order->>Notification: Send confirmation
+    Order-->>Gateway: Order response
+    Gateway-->>Client: Created order
+```
+
+## Technology Stack
+
+### Backend
+
+- Java 17 and Java 21
+- Spring Boot 3.5.15
+- Spring Cloud 2025.0.3
 - Spring Security
-- Spring Cloud
 - Spring Data JPA
 - Spring Validation
+- Spring Cloud OpenFeign
+- Resilience4j
+- MapStruct
+- Lombok
 - Maven
 
----
-
-## Cloud
-
-- Spring Cloud Config
-- Eureka Discovery Server
-- Spring Cloud Gateway
-
----
-
-## Security
-
-- JWT
-- BCrypt Password Encoder
-- Authentication Manager
-- Authorization
-- Role Based Security
-
----
-
-## Database
+### Data and Security
 
 - PostgreSQL
+- H2 for isolated tests
+- JWT Bearer authentication
+- BCrypt password encoding
+- Stateless Spring Security
+- Role-based authorization
 
----
+### DevSecOps
 
-## Build Tool
+- Git and GitHub
+- Jenkins declarative pipeline
+- Maven and JaCoCo
+- SonarQube Quality Gates
+- Docker and Docker Compose
+- Trivy image scanning
+- Kubernetes and Minikube
+- Helm
+- Argo CD
+- NGINX Ingress and reverse proxy
 
-- Maven
+### Observability
 
----
-
-## Containerization
-
-- Docker
-- Docker Compose
-
----
-
-## CI/CD
-
-- Jenkins
-
----
-
-## Code Quality
-
-- SonarQube
-
----
-
-## Monitoring
-
+- Spring Boot Actuator
+- Micrometer
 - Prometheus
 - Grafana
 - Alertmanager
+- kube-state-metrics
 - Node Exporter
-- cAdvisor
 
----
+## CI/CD and GitOps Pipeline
 
-## Container Orchestration
+```mermaid
+flowchart LR
+    Git["GitHub"] --> Jenkins["Jenkins"]
+    Jenkins --> Tests["Build + Tests + JaCoCo"]
+    Tests --> Sonar["SonarQube Gates"]
+    Sonar --> Images["Docker Images"]
+    Images --> Trivy["Trivy Scan"]
+    Trivy --> Minikube["Import to Minikube"]
+    Minikube --> Helm["Update Helm Tags"]
+    Helm --> GitOps["Push GitOps Commit"]
+    GitOps --> Argo["Argo CD Sync"]
+    Argo --> Smoke["Health + Smoke Tests"]
+```
 
-- Kubernetes
-- Minikube
+The Jenkins pipeline performs:
 
----
+1. Source checkout
+2. Infrastructure and connectivity validation
+3. Maven build and unit tests for every service
+4. JaCoCo XML coverage report generation
+5. SonarQube analysis per service
+6. Quality Gate enforcement per service
+7. Docker image creation
+8. Trivy critical-vulnerability scanning
+9. Image import into Minikube
+10. Dynamic Helm image-tag updates
+11. Helm linting and template validation
+12. GitOps commit and push
+13. Argo CD deployment synchronization
+14. Kubernetes rollout verification
+15. Service health checks and smoke tests
+16. Artifact archiving and workspace cleanup
 
-## Version Control
+The pipeline stops immediately if any test, Quality Gate, security scan, rollout, or health check fails.
 
-- Git
-- GitHub
+## SonarQube Quality Results
 
----
+| Project | Coverage | Bugs | Vulnerabilities | Code Smells | Duplications |
+|---|---:|---:|---:|---:|---:|
+| Config Server | 100% | 0 | 0 | 0 | 0.0% |
+| Discovery Server | 100% | 0 | 0 | 0 | 0.0% |
+| API Gateway | 100% | 0 | 0 | 0 | 0.0% |
+| User Service | 100% | 0 | 0 | 0 | 0.0% |
+| Product Service | 100% | 0 | 0 | 0 | 0.0% |
+| Inventory Service | 100% | 0 | 0 | 0 | 0.0% |
+| Order Service | 100% | 0 | 0 | 0 | 0.0% |
+| Payment Service | 100% | 0 | 0 | 0 | 0.0% |
+| Notification Service | 100% | 0 | 0 | 0 | 0.0% |
 
-# 📦 Microservices
+Security Hotspots were reviewed in the context of stateless REST APIs using Bearer JWT authentication and `SessionCreationPolicy.STATELESS`.
 
-| Service | Port | Description |
-|----------|------|-------------|
-| Config Server | 8888 | Centralized Configuration |
-| Eureka Server | 8761 | Service Discovery |
-| API Gateway | 8082 | API Routing |
-| User Service | 8083 | Authentication & Users |
-| Product Service | 8084 | Product Management |
-| Inventory Service | 8086 | Inventory |
-| Order Service | 8087 | Orders |
-| Payment Service | 8088 | Payments |
-| Notification Service | 8089 | Notifications |
+## Kubernetes and Helm
 
----
-
-# 🗂️ Project Structure
+The platform is packaged as a Helm application chart:
 
 ```text
-Enterprise-Ecommerce-Microservices-Platform
-│
+helm/ecommerce
+├── Chart.yaml
+├── values.yaml
+└── templates
+```
+
+Chart metadata:
+
+| Property | Value |
+|---|---|
+| Chart name | `ecommerce` |
+| Chart version | `1.0.0` |
+| Application version | `1.0` |
+| PostgreSQL dependency | Bitnami PostgreSQL `18.8.0` |
+
+Validate the chart:
+
+```bash
+helm dependency update helm/ecommerce
+helm lint helm/ecommerce
+helm template ecommerce helm/ecommerce
+```
+
+Install or upgrade:
+
+```bash
+helm upgrade --install ecommerce \
+  helm/ecommerce \
+  --namespace default \
+  --create-namespace
+```
+
+Check workloads:
+
+```bash
+kubectl get nodes
+kubectl get pods
+kubectl get services
+kubectl get ingress
+```
+
+## Argo CD GitOps
+
+The Argo CD application is defined in:
+
+```text
+argocd/ecommerce-application.yaml
+```
+
+Apply it:
+
+```bash
+kubectl apply -f argocd/ecommerce-application.yaml
+```
+
+Check status:
+
+```bash
+kubectl get applications -n argocd
+```
+
+Expected state:
+
+```text
+NAME                 SYNC STATUS   HEALTH STATUS
+ecommerce-platform   Synced        Healthy
+```
+
+The application uses:
+
+- Repository: `Pratapkumara/enterprise-ecommerce-microservices-platform`
+- Branch: `main`
+- Source path: `helm/ecommerce`
+- Automated synchronization
+- Pruning
+- Self-healing
+
+## Monitoring and Alerts
+
+The `monitoring` directory contains:
+
+```text
+monitoring
+├── application-servicemonitor.yaml
+├── ecommerce-alert-rules.yaml
+├── ecommerce-dashboard.json
+└── namespace.yaml
+```
+
+Prometheus scrapes Spring Boot Actuator metrics from the microservices through `/actuator/prometheus`.
+
+Configured alert scenarios include:
+
+- Service metrics unavailable
+- Kubernetes deployment unavailable
+- Frequent pod restarts
+- High JVM heap usage
+- HTTP 5xx responses
+
+Useful checks:
+
+```bash
+kubectl get pods -n monitoring
+kubectl get servicemonitors -A
+kubectl get prometheusrules -A
+```
+
+## Main API Endpoints
+
+| Capability | Method | Endpoint |
+|---|---|---|
+| Register user | POST | `/api/v1/users/register` |
+| Login | POST | `/api/v1/auth/login` |
+| List users | GET | `/api/v1/users` |
+| List products | GET | `/api/v1/products` |
+| Product operations | CRUD | `/api/products` |
+| Inventory operations | CRUD | `/api/inventory` |
+| Reserve stock | POST | `/api/inventory/{productId}/reserve?quantity={n}` |
+| Release stock | POST | `/api/inventory/{productId}/release?quantity={n}` |
+| Create order | POST | `/api/orders` |
+| List orders | GET | `/api/orders` |
+| Process payment | POST | `/api/payments` |
+| Create notification | POST | `/api/notifications` |
+| User notifications | GET | `/api/notifications/user/{userId}` |
+| Service health | GET | `/actuator/health` |
+| Prometheus metrics | GET | `/actuator/prometheus` |
+
+Exact public paths depend on the API Gateway routing configuration and active deployment profile.
+
+## Example Product API Test
+
+```bash
+curl -i http://localhost/api/v1/products
+```
+
+Expected:
+
+```text
+HTTP/1.1 200
+Content-Type: application/json
+```
+
+## Running Tests and Coverage Locally
+
+Run tests for one service:
+
+```bash
+cd product-service
+mvn clean verify
+```
+
+Run all services:
+
+```bash
+for service in \
+config-server discovery-server api-gateway user-service \
+product-service inventory-service order-service \
+payment-service notification-service
+do
+  mvn -f "$service/pom.xml" clean verify
+done
+```
+
+JaCoCo reports are generated at:
+
+```text
+<service>/target/site/jacoco/index.html
+<service>/target/site/jacoco/jacoco.xml
+```
+
+## Local Development
+
+### Prerequisites
+
+- Git
+- Java 17 and/or Java 21
+- Maven 3.9+
+- Docker
+- Docker Compose
+- PostgreSQL
+- kubectl
+- Helm
+- Minikube
+
+### Clone
+
+```bash
+git clone \
+https://github.com/Pratapkumara/enterprise-ecommerce-microservices-platform.git
+
+cd enterprise-ecommerce-microservices-platform
+```
+
+### Configuration
+
+The services use Spring Cloud Config. Keep sensitive values outside source control and provide them through:
+
+- Environment variables
+- Kubernetes Secrets
+- Jenkins credentials
+- A protected configuration repository
+
+Never commit real passwords, private keys, access tokens, or production JWT secrets.
+
+### Recommended Startup Order
+
+1. PostgreSQL
+2. Discovery Server
+3. Config Server
+4. API Gateway
+5. User Service
+6. Product Service
+7. Inventory Service
+8. Payment Service
+9. Notification Service
+10. Order Service
+
+Example:
+
+```bash
+mvn -f discovery-server/pom.xml spring-boot:run
+mvn -f config-server/pom.xml spring-boot:run
+```
+
+For a full deployment, Helm and Argo CD are the recommended paths.
+
+## Repository Structure
+
+```text
+.
 ├── api-gateway
 ├── config-server
 ├── discovery-server
@@ -301,988 +458,105 @@ Enterprise-Ecommerce-Microservices-Platform
 ├── order-service
 ├── payment-service
 ├── notification-service
-│
-├── docker-compose.yml
-├── Jenkinsfile
-├── k8s
-│
-├── config-repository
-│
+├── helm/ecommerce
+├── argocd
 ├── monitoring
-│   ├── prometheus
-│   ├── grafana
-│   └── alertmanager
-│
+├── kubernetes
+├── k8s
+├── cicd
+├── docker
+├── screenshots
+├── Jenkinsfile
 └── README.md
 ```
 
----
-
-# 🚀 Project Status
-
-| Module | Status |
-|---------|--------|
-| Microservices | ✅ Completed |
-| JWT Security | ✅ Completed |
-| Config Server | ✅ Completed |
-| Eureka Discovery | ✅ Completed |
-| API Gateway | ✅ Completed |
-| PostgreSQL | ✅ Completed |
-| Docker | ✅ Completed |
-| Jenkins | ✅ Completed |
-| SonarQube | ✅ Completed |
-| Prometheus | ✅ Completed |
-| Grafana | ✅ Completed |
-| Alertmanager | ✅ Completed |
-| Kubernetes | ✅ Completed |
-| End-to-End Testing | ✅ Completed |
-
----
-
-## 📌 Next
-
-➡️ **Part 2** will include:
-
-- Installation Guide
-- Local Setup
-- Docker Deployment
-- Docker Compose
-- Kubernetes Deployment
-- Jenkins Pipeline
-- CI/CD Workflow
-- Configuration Repository
-- Environment Variables
-
-```
----
-
-# ⚙️ Prerequisites
-
-Before running this project, make sure the following software is installed:
-
-| Software | Version |
-|----------|---------|
-| Java | 21 |
-| Maven | 3.9+ |
-| Docker | Latest |
-| Docker Compose | Latest |
-| Kubernetes | v1.30+ |
-| Minikube | Latest |
-| kubectl | Latest |
-| Git | Latest |
-| PostgreSQL | 16+ |
-| Jenkins | Latest |
-
----
-
-# 🚀 Getting Started
-
-Clone the repository:
-
-```bash
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/enterprise-ecommerce-microservices-platform.git
-
-cd enterprise-ecommerce-microservices-platform
-```
-
----
-
-# 🗄 Database Configuration
-
-Create the following PostgreSQL databases:
-
-```
-userdb
-productdb
-inventorydb
-orderdb
-paymentdb
-notificationdb
-```
-
-Default credentials:
-
-```
-Username : postgres
-Password : postgres
-```
-
----
-
-# ⚙ Spring Cloud Config Server
-
-The project uses a centralized configuration repository.
-
-```
-config-repository/
-
-├── api-gateway.yml
-├── user-service.yml
-├── product-service.yml
-├── inventory-service.yml
-├── order-service.yml
-├── payment-service.yml
-├── notification-service.yml
-```
-
-All services load their configuration from the Config Server during startup.
-
----
-
-# ▶ Running Microservices Locally
-
-Start the services in the following order:
-
-1. Config Server
-
-```
-cd config-server
-mvn spring-boot:run
-```
-
----
-
-2. Eureka Discovery Server
-
-```
-cd discovery-server
-mvn spring-boot:run
-```
-
----
-
-3. User Service
-
-```
-cd user-service
-mvn spring-boot:run
-```
-
----
-
-4. Product Service
-
-```
-cd product-service
-mvn spring-boot:run
-```
-
----
-
-5. Inventory Service
-
-```
-cd inventory-service
-mvn spring-boot:run
-```
-
----
-
-6. Order Service
-
-```
-cd order-service
-mvn spring-boot:run
-```
-
----
-
-7. Payment Service
-
-```
-cd payment-service
-mvn spring-boot:run
-```
-
----
-
-8. Notification Service
-
-```
-cd notification-service
-mvn spring-boot:run
-```
-
----
-
-9. API Gateway
-
-```
-cd api-gateway
-mvn spring-boot:run
-```
-
----
-
-# 🐳 Docker Deployment
-
-Build Docker images for all services.
-
-Example:
-
-```bash
-cd user-service
-
-docker build -t user-service:1.0 .
-```
-
-Repeat for every microservice.
-
-Verify Docker images:
-
-```bash
-docker images
-```
-
----
-
-# 🐳 Docker Compose
-
-Start the complete application:
-
-```bash
-docker compose up -d
-```
-
-Stop the application:
-
-```bash
-docker compose down
-```
-
-View running containers:
-
-```bash
-docker ps
-```
-
-View logs:
-
-```bash
-docker compose logs -f
-```
-
----
-
-# ☸ Kubernetes Deployment
-
-Start Minikube:
-
-```bash
-minikube start
-```
-
-Enable Docker environment:
-
-```bash
-eval $(minikube docker-env)
-```
-
-Deploy Config Server:
-
-```bash
-kubectl apply -f k8s/config-server/
-```
-
-Deploy Eureka:
-
-```bash
-kubectl apply -f k8s/eureka-server/
-```
-
-Deploy User Service:
-
-```bash
-kubectl apply -f k8s/user-service/
-```
-
-Deploy Product Service:
-
-```bash
-kubectl apply -f k8s/product-service/
-```
-
-Deploy Inventory Service:
-
-```bash
-kubectl apply -f k8s/inventory-service/
-```
-
-Deploy Order Service:
-
-```bash
-kubectl apply -f k8s/order-service/
-```
-
-Deploy Payment Service:
-
-```bash
-kubectl apply -f k8s/payment-service/
-```
-
-Deploy Notification Service:
-
-```bash
-kubectl apply -f k8s/notification-service/
-```
-
-Deploy API Gateway:
-
-```bash
-kubectl apply -f k8s/api-gateway/
-```
-
----
-
-Verify Deployments:
-
-```bash
-kubectl get deployments
-```
-
-Verify Pods:
-
-```bash
-kubectl get pods
-```
-
-Verify Services:
-
-```bash
-kubectl get svc
-```
-
----
-
-Get API Gateway URL:
-
-```bash
-minikube service api-gateway --url
-```
-
-Example Output:
-
-```
-http://192.168.xx.xx:32xxx
-```
-
----
-
-# 🔄 Jenkins CI/CD Pipeline
-
-The Jenkins pipeline performs the following steps:
-
-- Clone GitHub Repository
-- Build using Maven
-- Execute Unit Tests
-- Run SonarQube Analysis
-- Build Docker Images
-- Push Build Artifacts
-- Deploy Application
-
-Pipeline Stages:
-
-```
-Git Checkout
-      │
-      ▼
- Maven Build
-      │
-      ▼
- Unit Testing
-      │
-      ▼
- SonarQube Analysis
-      │
-      ▼
- Docker Build
-      │
-      ▼
- Deployment
-```
-
----
-
-# 📊 Monitoring Stack
-
-Monitoring components:
-
-- Prometheus
-- Grafana
-- Alertmanager
-- Node Exporter
-- cAdvisor
-
-Metrics collected:
-
-- CPU Usage
-- Memory Usage
-- Disk Usage
-- Network Traffic
-- Container Metrics
-- JVM Metrics
-- Application Health
-- Service Availability
-
----
-
-# 🔐 Security
-
-Implemented security features:
-
-- JWT Authentication
-- BCrypt Password Encoding
-- Spring Security
-- Stateless Authentication
-- Authorization Filter
-- Protected REST APIs
-- Public Authentication Endpoints
-
----
-# 🌐 REST API Documentation
-
-## Authentication APIs
-
-### Register User
-
-```
-POST /api/v1/users/register
-```
-
-Request Body
-
-```json
-{
-  "firstName":"John",
-  "lastName":"Doe",
-  "email":"john@example.com",
-  "password":"Password123",
-  "role":"USER"
-}
-```
-
----
-
-### Login
-
-```
-POST /api/v1/auth/login
-```
-
-Request
-
-```json
-{
-  "email":"john@example.com",
-  "password":"Password123"
-}
-```
-
-Response
-
-```json
-{
-  "token":"JWT_TOKEN",
-  "tokenType":"Bearer"
-}
-```
-
----
-
-## Product APIs
-
-| Method | Endpoint |
-|----------|------------------------------|
-| GET | /api/v1/products |
-| GET | /api/v1/products/{id} |
-| POST | /api/v1/products |
-| PUT | /api/v1/products/{id} |
-| DELETE | /api/v1/products/{id} |
-
----
-
-## Inventory APIs
-
-| Method | Endpoint |
-|----------|------------------------------|
-| GET | /api/v1/inventory |
-| POST | /api/v1/inventory |
-| PUT | /api/v1/inventory/{id} |
-
----
-
-## Order APIs
-
-| Method | Endpoint |
-|----------|------------------------------|
-| POST | /api/v1/orders |
-| GET | /api/v1/orders |
-| GET | /api/v1/orders/{id} |
-
----
-
-## Payment APIs
-
-| Method | Endpoint |
-|----------|------------------------------|
-| POST | /api/v1/payments |
-| GET | /api/v1/payments |
-| GET | /api/v1/payments/{id} |
-
----
-
-## Notification APIs
-
-| Method | Endpoint |
-|----------|------------------------------|
-| GET | /api/v1/notifications |
-| POST | /api/v1/notifications |
-
----
-
-# 📸 Project Screenshots
-
-## Architecture
-
-```
-screenshots/architecture.png
-```
-
----
-
-## Kubernetes Deployment
-
-```
-screenshots/kubernetes-pods.png
-```
-
----
-
-## Eureka Dashboard
-
-```
-screenshots/eureka-dashboard.png
-```
-
----
-
-## Jenkins Pipeline
-
-```
-screenshots/jenkins-pipeline.png
-```
-
----
-
-## SonarQube Dashboard
-
-```
-screenshots/sonarqube-dashboard.png
-```
-
----
-
-## Grafana Dashboard
-
-```
-screenshots/grafana-dashboard.png
-```
-
----
-
-## Prometheus
-
-```
-screenshots/prometheus-dashboard.png
-```
-
----
-
-## Alertmanager
-
-```
-screenshots/alertmanager-dashboard.png
-```
-
----
-
-# ☸ Kubernetes Resources
-
-The project contains Kubernetes manifests for every microservice.
-
-```
-k8s/
-
-├── api-gateway
-├── config-server
-├── eureka-server
-├── inventory-service
-├── notification-service
-├── order-service
-├── payment-service
-├── product-service
-└── user-service
-```
-
-Each folder contains
-
-- deployment.yaml
-- service.yaml
-
----
-
-# 📊 Monitoring Dashboard
-
-Prometheus collects metrics from
-
-- Spring Boot Actuator
-- JVM
-- Node Exporter
-- cAdvisor
-
-Grafana visualizes
-
-- CPU Usage
-
-- Memory Usage
-
-- JVM Memory
-
-- Disk Usage
-
-- Network Usage
-
-- Container Metrics
-
-- Service Health
-
----
-
-# 🔔 Alertmanager
-
-Configured alerts include
-
-- High CPU Usage
-
-- High Memory Usage
-
-- Service Down
-
-- Low Disk Space
-
-- JVM Memory Threshold
-
-- Application Health Failure
-
----
-
-# 🧪 Testing
-
-### User Registration
-
-✅ Tested
-
----
-
-### User Login
-
-✅ Tested
-
----
-
-### JWT Authentication
-
-✅ Tested
-
----
-
-### Product APIs
-
-✅ Tested
-
----
-
-### API Gateway Routing
-
-✅ Tested
-
----
-
-### Service Discovery
-
-✅ Tested
-
----
-
-### PostgreSQL Connectivity
-
-✅ Tested
-
----
-
-### Docker Deployment
-
-✅ Tested
-
----
-
-### Kubernetes Deployment
-
-✅ Tested
-
----
-
-### Prometheus Monitoring
-
-✅ Tested
-
----
-
-### Grafana Dashboard
-
-✅ Tested
-
----
-
-### Alertmanager
-
-✅ Tested
-
----
-
-# 📈 Project Highlights
-
-✔ Enterprise Architecture
-
-✔ Microservices
-
-✔ Spring Security JWT
-
-✔ Spring Cloud
-
-✔ Config Server
-
-✔ Eureka
-
-✔ API Gateway
-
-✔ Docker
-
-✔ Kubernetes
-
-✔ Jenkins CI/CD
-
-✔ SonarQube
-
-✔ Prometheus
-
-✔ Grafana
-
-✔ Alertmanager
-
-✔ PostgreSQL
-
-✔ Production Ready Design
-
----
-# 🚀 Future Enhancements
-
-The following features can be implemented in future versions of the project:
-
-- Deploy on AWS EKS
-- Helm Charts
-- Horizontal Pod Autoscaler (HPA)
-- Kubernetes Ingress Controller
-- AWS Load Balancer Integration
-- Redis Caching
-- Apache Kafka Event Streaming
-- Distributed Tracing using Zipkin / Jaeger
-- ELK Stack Logging
-- GitOps using ArgoCD
-- Blue-Green Deployment
-- Canary Deployment
-- Multi-Cluster Kubernetes
-- OAuth2 Authentication
-- OpenAPI / Swagger Documentation
-- Email Notification Integration
-- Payment Gateway Integration (Stripe/Razorpay)
-- Kubernetes Secrets Management
-- HashiCorp Vault Integration
-
----
-
-# 📚 Learning Outcomes
-
-This project helped in understanding:
-
-- Enterprise Microservices Architecture
-- Spring Boot Development
-- Spring Security with JWT
-- Spring Cloud Config Server
-- Eureka Service Discovery
-- Spring Cloud Gateway
-- REST API Design
-- PostgreSQL Integration
-- Docker Containerization
-- Docker Compose
-- Kubernetes Deployments
-- Kubernetes Services
-- Rolling Updates
-- Config Management
-- Jenkins CI/CD Pipeline
-- SonarQube Code Quality
-- Prometheus Monitoring
-- Grafana Dashboards
-- Alertmanager Configuration
-- Linux Administration
-- Git & GitHub Workflow
-
----
-
-# 💼 Resume Highlights
+## Resilience and Security
+
+- Stateless JWT authentication
+- BCrypt password hashing
+- Spring Security filter chain
+- Role-based access control
+- Resilience4j circuit breaker and retry
+- Notification fallback with structured logging
+- Typed exception responses
+- Dedicated domain exceptions
+- Immutable security constants
+- Kubernetes self-healing
+- Argo CD drift correction
+- CI-enforced SonarQube and Trivy gates
+
+## Verified Deployment
+
+The latest verified release is `build-22`.
+
+Verification completed through:
+
+- Kubernetes pod readiness checks
+- Deployment rollout checks
+- Argo CD synchronization
+- Service Actuator health endpoints
+- NGINX product API smoke test
+- SonarQube project analysis
+- Trivy image scans
+
+## Screenshots
+
+Create evidence screenshots in the `screenshots` directory using descriptive names:
+
+```text
+screenshots/
+├── architecture.png
+├── jenkins-build-22-success.png
+├── sonarqube-projects-100-coverage.png
+├── argocd-synced-healthy.png
+├── grafana-dashboard.png
+├── prometheus-targets.png
+└── product-api-response.png
+```
+
+After adding screenshots, embed them in this README using relative paths:
+
+```markdown
+![Jenkins Build](screenshots/jenkins-build-22-success.png)
+![SonarQube Results](screenshots/sonarqube-projects-100-coverage.png)
+![Argo CD](screenshots/argocd-synced-healthy.png)
+![Grafana](screenshots/grafana-dashboard.png)
+```
+
+## Key Learning Outcomes
 
 This project demonstrates practical experience with:
 
-- Enterprise Java Development
-- Backend API Development
-- Microservices Architecture
-- Secure REST APIs
-- JWT Authentication
-- Docker
-- Kubernetes
-- CI/CD Pipeline
-- Monitoring & Observability
-- DevOps Best Practices
-- Cloud-Native Application Development
+- Designing and integrating Spring Boot microservices
+- Building secure REST APIs with JWT
+- Managing distributed configuration and discovery
+- Implementing service-to-service communication
+- Writing unit and integration tests
+- Achieving CI-enforced code quality
+- Building secure container images
+- Packaging Kubernetes workloads with Helm
+- Implementing GitOps with Argo CD
+- Monitoring distributed applications
+- Operating a complete platform on AWS EC2
 
----
+## Future Enhancements
 
-# 🏆 Key Achievements
+- React or Next.js shopping frontend
+- Shopping cart and checkout services
+- Kafka-based event-driven communication
+- Distributed tracing with OpenTelemetry and Tempo
+- Centralized logging with Loki or the ELK stack
+- Cloud-managed Kubernetes deployment
+- Managed PostgreSQL
+- Horizontal Pod Autoscaling based on application metrics
 
-- Designed and developed an enterprise-grade microservices application.
-- Implemented centralized configuration using Spring Cloud Config.
-- Configured service discovery using Eureka Server.
-- Built secure REST APIs using JWT Authentication.
-- Developed an API Gateway for request routing.
-- Containerized all microservices using Docker.
-- Created a complete Docker Compose environment.
-- Implemented Jenkins CI/CD pipeline.
-- Integrated SonarQube for code quality analysis.
-- Configured Prometheus and Grafana for monitoring.
-- Implemented Alertmanager for alerting.
-- Successfully migrated all microservices to Kubernetes.
-- Performed end-to-end testing of all deployed services.
-
----
-
-# 📊 Project Statistics
-
-| Category | Count |
-|----------|------:|
-| Microservices | 6 |
-| Infrastructure Services | 3 |
-| Total Deployments | 9 |
-| Kubernetes Services | 9 |
-| Databases | 6 |
-| API Gateway | 1 |
-| Config Server | 1 |
-| Eureka Server | 1 |
-| Docker Images | 9 |
-| Jenkins Pipeline | 1 |
-| Monitoring Stack | 5 |
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome.
-
-If you would like to improve this project:
-
-1. Fork the repository.
-2. Create a new feature branch.
-3. Commit your changes.
-4. Push the branch.
-5. Open a Pull Request.
-
----
-
-# ⭐ Support
-
-If you found this project helpful:
-
-- ⭐ Star this repository
-- 🍴 Fork the repository
-- 💡 Share your feedback
-- 🛠️ Suggest improvements
-
----
-
-# 📄 License
-
-This project is licensed under the MIT License.
-
-You are free to use, modify, and distribute this project for educational and personal purposes.
-
----
-
-# 🙏 Acknowledgements
-
-Special thanks to the creators and maintainers of the following technologies:
-
-- Java
-- Spring Boot
-- Spring Cloud
-- Spring Security
-- PostgreSQL
-- Docker
-- Kubernetes
-- Jenkins
-- SonarQube
-- Prometheus
-- Grafana
-- Alertmanager
-- Git & GitHub
-
----
-
-# 👨‍💻 Author
+## Author
 
 **Pratap Kumar Sahoo**
 
-Backend Java Developer | Spring Boot | Microservices | Docker | Kubernetes | DevOps
+- GitHub: [Pratapkumara](https://github.com/Pratapkumara)
+- Project: [Enterprise E-Commerce Microservices Platform](https://github.com/Pratapkumara/enterprise-ecommerce-microservices-platform)
 
-### Tech Stack
+## License
 
-- Java
-- Spring Boot
-- Spring Cloud
-- Spring Security
-- PostgreSQL
-- Docker
-- Kubernetes
-- Jenkins
-- SonarQube
-- Prometheus
-- Grafana
-- Alertmanager
-- Git
-- GitHub
-
----
-
-# ⭐ If you like this project...
-
-Please consider giving it a ⭐ on GitHub!
-
-It motivates me to build more enterprise-level open-source projects.
-
----
-
-<p align="center">
-
-## 🚀 Thank You for Visiting!
-
-**Happy Coding! ❤️**
-
-</p>
+This project is intended for learning, portfolio demonstration, and technical evaluation. Add an explicit open-source license before redistributing or accepting external contributions.
