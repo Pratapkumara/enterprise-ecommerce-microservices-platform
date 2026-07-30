@@ -18,6 +18,7 @@ import com.pratap.enterprise.orderservice.repository.OrderRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +26,22 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService {
+public class OrderServiceImpl
+        implements OrderService {
+
+    private static final String ORDER_NOT_FOUND =
+            "Order not found with id: ";
+
+    private static final String NOTIFICATION_EMAIL =
+            "test@gmail.com";
+
+    private static final String NOTIFICATION_MESSAGE =
+            "Your order has been created successfully";
+
+    private static final String NOTIFICATION_TYPE =
+            "ORDER";
 
     private final OrderRepository orderRepository;
 
@@ -36,20 +51,45 @@ public class OrderServiceImpl implements OrderService {
 
     private final NotificationClient notificationClient;
 
-
     @Override
     @Transactional
-    public OrderResponse createOrder(OrderRequest request) {
+    public OrderResponse createOrder(
+            OrderRequest request) {
 
         Order order = Order.builder()
                 .userId(request.getUserId())
                 .build();
 
+        List<OrderItem> items =
+                createOrderItems(
+                        request,
+                        order
+                );
 
-        List<OrderItem> items = request.getItems()
+        order.setItems(items);
+
+        BigDecimal totalAmount =
+                calculateTotalAmount(items);
+
+        order.setTotalAmount(totalAmount);
+
+        Order savedOrder =
+                orderRepository.save(order);
+
+        processPayment(savedOrder);
+
+        sendNotification(savedOrder);
+
+        return OrderMapper.toResponse(savedOrder);
+    }
+
+    private List<OrderItem> createOrderItems(
+            OrderRequest request,
+            Order order) {
+
+        return request.getItems()
                 .stream()
                 .map(itemRequest -> {
-
                     ProductResponse product =
                             productClient.getProductById(
                                     itemRequest.getProductId()
@@ -57,134 +97,117 @@ public class OrderServiceImpl implements OrderService {
 
                     return OrderItem.builder()
                             .productId(product.getId())
-                            .quantity(itemRequest.getQuantity())
+                            .quantity(
+                                    itemRequest.getQuantity()
+                            )
                             .price(product.getPrice())
                             .order(order)
                             .build();
-
                 })
                 .toList();
+    }
 
+    private BigDecimal calculateTotalAmount(
+            List<OrderItem> items) {
 
-        order.setItems(items);
-
-
-        BigDecimal totalAmount = items.stream()
+        return items.stream()
                 .map(item ->
                         item.getPrice().multiply(
-                                BigDecimal.valueOf(item.getQuantity())
+                                BigDecimal.valueOf(
+                                        item.getQuantity()
+                                )
                         )
                 )
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(
+                        BigDecimal.ZERO,
+                        BigDecimal::add
+                );
+    }
 
-
-        order.setTotalAmount(totalAmount);
-
-
-        Order savedOrder = orderRepository.save(order);
-
-
-        paymentClient.processPayment(
+    private void processPayment(Order savedOrder) {
+        PaymentRequest paymentRequest =
                 PaymentRequest.builder()
                         .orderId(savedOrder.getId())
                         .userId(savedOrder.getUserId())
                         .amount(savedOrder.getTotalAmount())
                         .paymentMethod(PaymentMethod.UPI)
-                        .build()
-        );
+                        .build();
 
-
-        sendNotification(savedOrder);
-
-
-        return OrderMapper.toResponse(savedOrder);
+        paymentClient.processPayment(paymentRequest);
     }
-
 
     @CircuitBreaker(
             name = "notificationService",
             fallbackMethod = "notificationFallback"
     )
-    @Retry(
-            name = "notificationService"
-    )
+    @Retry(name = "notificationService")
     public void sendNotification(Order savedOrder) {
-
-
-        notificationClient.sendNotification(
+        NotificationRequest notificationRequest =
                 NotificationRequest.builder()
                         .userId(savedOrder.getUserId())
-                        .email("test@gmail.com")
-                        .message("Your order has been created successfully")
-                        .type("ORDER")
-                        .build()
+                        .email(NOTIFICATION_EMAIL)
+                        .message(NOTIFICATION_MESSAGE)
+                        .type(NOTIFICATION_TYPE)
+                        .build();
+
+        notificationClient.sendNotification(
+                notificationRequest
         );
-
     }
-
 
     public void notificationFallback(
             Order savedOrder,
-            Throwable throwable
-    ) {
+            Throwable throwable) {
 
-        System.out.println(
-                "Notification service unavailable. Order created successfully. Reason: "
-                        + throwable.getMessage()
+        log.warn(
+                "Notification unavailable for order {}. "
+                        + "Order creation succeeded. Reason: {}",
+                savedOrder.getId(),
+                throwable.getMessage()
         );
-
     }
-
-
 
     @Override
     public OrderResponse getOrderById(Long id) {
-
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new OrderNotFoundException(
-                                "Order not found with id: " + id
-                        )
-                );
+        Order order = findOrderById(id);
 
         return OrderMapper.toResponse(order);
     }
 
-
-
     @Override
     public List<OrderResponse> getAllOrders() {
-
         return orderRepository.findAll()
                 .stream()
                 .map(OrderMapper::toResponse)
                 .toList();
     }
 
-
-
     @Override
     @Transactional
-    public OrderResponse updateOrderStatus(Long id, String status) {
+    public OrderResponse updateOrderStatus(
+            Long id,
+            String status) {
 
-
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new OrderNotFoundException(
-                                "Order not found with id: " + id
-                        )
-                );
-
+        Order order = findOrderById(id);
 
         order.setStatus(
-                OrderStatus.valueOf(status.toUpperCase())
+                OrderStatus.valueOf(
+                        status.toUpperCase()
+                )
         );
 
-
-        Order updatedOrder = orderRepository.save(order);
-
+        Order updatedOrder =
+                orderRepository.save(order);
 
         return OrderMapper.toResponse(updatedOrder);
     }
 
+    private Order findOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new OrderNotFoundException(
+                                ORDER_NOT_FOUND + id
+                        )
+                );
+    }
 }

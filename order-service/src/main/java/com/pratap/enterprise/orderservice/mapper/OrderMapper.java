@@ -7,16 +7,17 @@ import com.pratap.enterprise.orderservice.entity.OrderItem;
 
 import java.util.List;
 
-public class OrderMapper {
+public final class OrderMapper {
 
+    private OrderMapper() {
+    }
 
     public static OrderResponse toResponse(Order order) {
-
-        List<OrderItemResponse> items = order.getItems()
-                .stream()
-                .map(OrderMapper::toItemResponse)
-                .toList();
-
+        List<OrderItemResponse> items =
+                order.getItems()
+                        .stream()
+                        .map(OrderMapper::toItemResponse)
+                        .toList();
 
         return OrderResponse.builder()
                 .id(order.getId())
@@ -28,8 +29,8 @@ public class OrderMapper {
                 .build();
     }
 
-
-    private static OrderItemResponse toItemResponse(OrderItem item) {
+    private static OrderItemResponse toItemResponse(
+            OrderItem item) {
 
         return OrderItemResponse.builder()
                 .id(item.getId())
@@ -38,5 +39,4 @@ public class OrderMapper {
                 .price(item.getPrice())
                 .build();
     }
-
 }

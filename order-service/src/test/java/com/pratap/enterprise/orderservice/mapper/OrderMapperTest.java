@@ -2,14 +2,28 @@ package com.pratap.enterprise.orderservice.mapper;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class OrderMapperTest {
 
     @Test
-    void mapperClassShouldBeInstantiable() {
-        OrderMapper mapper = new OrderMapper();
+    void mapperConstructorShouldBePrivate()
+            throws Exception {
 
-        assertNotNull(mapper);
+        Constructor<OrderMapper> constructor =
+                OrderMapper.class.getDeclaredConstructor();
+
+        assertTrue(
+                Modifier.isPrivate(
+                        constructor.getModifiers()
+                )
+        );
+
+        constructor.setAccessible(true);
+
+        assertNotNull(constructor.newInstance());
     }
 }
