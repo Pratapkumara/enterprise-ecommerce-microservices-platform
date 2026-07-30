@@ -28,7 +28,7 @@ class SecurityConfigTest {
                 .isNotNull();
 
         assertThat(userRepository.count())
-                .isGreaterThanOrEqualTo(0L);
+                .isNotNegative();
     }
 
     @Test
