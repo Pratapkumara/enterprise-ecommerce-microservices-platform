@@ -1,10 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="
+         http://maven.apache.org/POM/4.0.0
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -13,25 +15,20 @@
         <relativePath/>
     </parent>
 
-
     <groupId>com.pratap.enterprise</groupId>
     <artifactId>notification-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>notification-service</name>
-    <description>Notification Service</description>
-
+    <description>Enterprise E-Commerce Notification Service</description>
 
     <properties>
-
         <java.version>17</java.version>
         <spring-cloud.version>2025.0.3</spring-cloud.version>
-
+        <jacoco.version>0.8.13</jacoco.version>
     </properties>
 
-
     <dependencies>
-
 
         <!-- REST API -->
         <dependency>
@@ -39,20 +36,17 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-
-        <!-- JPA -->
+        <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-
-        <!-- Validation -->
+        <!-- Bean Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-
 
         <!-- PostgreSQL -->
         <dependency>
@@ -61,27 +55,23 @@
             <scope>runtime</scope>
         </dependency>
 
-
         <!-- Mail -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
-
-        <!-- Eureka -->
+        <!-- Eureka Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
-
-        <!-- Config Server -->
+        <!-- Config Server Client -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
-
 
         <!-- OpenFeign -->
         <dependency>
@@ -89,20 +79,18 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
-
         <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-
         <!-- Prometheus Metrics -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
+            <scope>runtime</scope>
         </dependency>
-
 
         <!-- Lombok -->
         <dependency>
@@ -111,21 +99,16 @@
             <optional>true</optional>
         </dependency>
 
-
-        <!-- Test -->
+        <!-- JUnit 5, Mockito, AssertJ and Spring Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-
     </dependencies>
 
-
-
     <dependencyManagement>
-
         <dependencies>
 
             <dependency>
@@ -137,24 +120,52 @@
             </dependency>
 
         </dependencies>
-
     </dependencyManagement>
 
-
-
     <build>
-
         <plugins>
 
+            <!-- Executable Spring Boot JAR -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
+            <!-- JaCoCo Coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+
+                <executions>
+
+                    <execution>
+                        <id>prepare-jacoco-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>generate-jacoco-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
 
         </plugins>
-
     </build>
-
 
 </project>
