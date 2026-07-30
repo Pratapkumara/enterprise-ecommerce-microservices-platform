@@ -20,33 +20,76 @@ class GlobalExceptionHandlerTest {
                         "Inventory not found"
                 );
 
-        ResponseEntity<?> response =
+        ResponseEntity<Map<String, Object>> response =
                 handler.handleInventoryNotFound(exception);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNotNull(response.getBody());
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                response.getStatusCode()
+        );
 
-        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Map<String, Object> body =
+                response.getBody();
 
-        assertEquals("Inventory not found", body.get("error"));
+        assertNotNull(body);
+        assertEquals(
+                "Inventory not found",
+                body.get("error")
+        );
         assertEquals(404, body.get("status"));
         assertNotNull(body.get("timestamp"));
     }
 
     @Test
-    void runtimeExceptionShouldReturn400Response() {
-        RuntimeException exception =
-                new RuntimeException("Insufficient stock");
+    void stockOperationShouldReturn400Response() {
+        StockOperationException exception =
+                new StockOperationException(
+                        "Insufficient stock available"
+                );
 
-        ResponseEntity<?> response =
+        ResponseEntity<Map<String, Object>> response =
+                handler.handleStockOperation(exception);
+
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
+
+        Map<String, Object> body =
+                response.getBody();
+
+        assertNotNull(body);
+        assertEquals(
+                "Insufficient stock available",
+                body.get("error")
+        );
+        assertEquals(400, body.get("status"));
+        assertNotNull(body.get("timestamp"));
+    }
+
+    @Test
+    void unexpectedRuntimeExceptionShouldReturn400Response() {
+        RuntimeException exception =
+                new RuntimeException(
+                        "Unexpected inventory failure"
+                );
+
+        ResponseEntity<Map<String, Object>> response =
                 handler.handleRuntimeException(exception);
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNotNull(response.getBody());
+        assertEquals(
+                HttpStatus.BAD_REQUEST,
+                response.getStatusCode()
+        );
 
-        Map<?, ?> body = (Map<?, ?>) response.getBody();
+        Map<String, Object> body =
+                response.getBody();
 
-        assertEquals("Insufficient stock", body.get("error"));
+        assertNotNull(body);
+        assertEquals(
+                "Unexpected inventory failure",
+                body.get("error")
+        );
         assertEquals(400, body.get("status"));
         assertNotNull(body.get("timestamp"));
     }

@@ -4,6 +4,7 @@ import com.pratap.enterprise.inventoryservice.dto.InventoryRequest;
 import com.pratap.enterprise.inventoryservice.dto.InventoryResponse;
 import com.pratap.enterprise.inventoryservice.entity.Inventory;
 import com.pratap.enterprise.inventoryservice.exception.InventoryNotFoundException;
+import com.pratap.enterprise.inventoryservice.exception.StockOperationException;
 import com.pratap.enterprise.inventoryservice.mapper.InventoryMapper;
 import com.pratap.enterprise.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,155 +14,134 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class InventoryServiceImpl implements InventoryService {
+public class InventoryServiceImpl
+        implements InventoryService {
 
+    private static final String INVENTORY_NOT_FOUND =
+            "Inventory not found for product id: ";
 
     private final InventoryRepository repository;
 
-
     @Override
-    public InventoryResponse createInventory(InventoryRequest request) {
+    public InventoryResponse createInventory(
+            InventoryRequest request) {
 
-        Inventory inventory = InventoryMapper.toEntity(request);
+        Inventory inventory =
+                InventoryMapper.toEntity(request);
 
-        Inventory saved = repository.save(inventory);
+        Inventory saved =
+                repository.save(inventory);
 
         return InventoryMapper.toResponse(saved);
     }
 
-
     @Override
     public List<InventoryResponse> getAllInventory() {
-
         return repository.findAll()
                 .stream()
                 .map(InventoryMapper::toResponse)
                 .toList();
     }
 
-
     @Override
-    public InventoryResponse getInventoryByProductId(Long productId) {
+    public InventoryResponse getInventoryByProductId(
+            Long productId) {
 
-        Inventory inventory = repository.findByProductId(productId)
-                .orElseThrow(() ->
-                        new InventoryNotFoundException(
-                                "Inventory not found for product id: " + productId
-                        ));
+        Inventory inventory =
+                findInventoryByProductId(productId);
 
         return InventoryMapper.toResponse(inventory);
     }
-
 
     @Override
     public InventoryResponse updateInventory(
             Long productId,
             InventoryRequest request) {
 
-
-        Inventory inventory = repository.findByProductId(productId)
-                .orElseThrow(() ->
-                        new InventoryNotFoundException(
-                                "Inventory not found for product id: " + productId
-                        ));
-
+        Inventory inventory =
+                findInventoryByProductId(productId);
 
         inventory.setQuantity(request.getQuantity());
 
-
-        Inventory updated = repository.save(inventory);
-
+        Inventory updated =
+                repository.save(inventory);
 
         return InventoryMapper.toResponse(updated);
     }
 
-
     @Override
     public void deleteInventory(Long productId) {
-
-        Inventory inventory = repository.findByProductId(productId)
-                .orElseThrow(() ->
-                        new InventoryNotFoundException(
-                                "Inventory not found for product id: " + productId
-                        ));
-
+        Inventory inventory =
+                findInventoryByProductId(productId);
 
         repository.delete(inventory);
     }
-
 
     @Override
     public InventoryResponse reserveStock(
             Long productId,
             Integer quantity) {
 
-
-        Inventory inventory = repository.findByProductId(productId)
-                .orElseThrow(() ->
-                        new InventoryNotFoundException(
-                                "Inventory not found for product id: " + productId
-                        ));
-
+        Inventory inventory =
+                findInventoryByProductId(productId);
 
         int available =
                 inventory.getQuantity()
-                - inventory.getReservedQuantity();
-
+                        - inventory.getReservedQuantity();
 
         if (available < quantity) {
-
-            throw new RuntimeException(
+            throw new StockOperationException(
                     "Insufficient stock available"
             );
         }
 
-
         inventory.setReservedQuantity(
-                inventory.getReservedQuantity() + quantity
+                inventory.getReservedQuantity()
+                        + quantity
         );
 
-
-        Inventory updated = repository.save(inventory);
-
+        Inventory updated =
+                repository.save(inventory);
 
         return InventoryMapper.toResponse(updated);
     }
-
 
     @Override
     public InventoryResponse releaseStock(
             Long productId,
             Integer quantity) {
 
-
-        Inventory inventory = repository.findByProductId(productId)
-                .orElseThrow(() ->
-                        new InventoryNotFoundException(
-                                "Inventory not found for product id: " + productId
-                        ));
-
+        Inventory inventory =
+                findInventoryByProductId(productId);
 
         int reserved =
                 inventory.getReservedQuantity();
 
-
         if (reserved < quantity) {
-
-            throw new RuntimeException(
+            throw new StockOperationException(
                     "Release quantity exceeds reserved stock"
             );
         }
-
 
         inventory.setReservedQuantity(
                 reserved - quantity
         );
 
-
-        Inventory updated = repository.save(inventory);
-
+        Inventory updated =
+                repository.save(inventory);
 
         return InventoryMapper.toResponse(updated);
     }
 
+    private Inventory findInventoryByProductId(
+            Long productId) {
+
+        return repository.findByProductId(productId)
+                .orElseThrow(() ->
+                        new InventoryNotFoundException(
+                                INVENTORY_NOT_FOUND
+                                        + productId
+                        )
+                );
+    }
 }
