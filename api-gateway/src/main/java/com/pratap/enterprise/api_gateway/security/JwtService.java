@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
 import java.util.function.Function;
 
 @Service
@@ -23,31 +22,26 @@ public class JwtService {
 
     public boolean isTokenValid(String token) {
         try {
-            return extractUsername(token) != null
-                    && !isTokenExpired(token);
-        } catch (Exception e) {
+            /*
+             * parseClaimsJws validates the signature and expiration.
+             * A malformed, invalid, or expired token throws an exception.
+             */
+            return extractUsername(token) != null;
+        } catch (Exception exception) {
             return false;
         }
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
     }
 
     public <T> T extractClaim(
             String token,
             Function<Claims, T> claimsResolver) {
 
-        final Claims claims = extractAllClaims(token);
+        Claims claims = extractAllClaims(token);
+
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
-
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -56,8 +50,9 @@ public class JwtService {
     }
 
     private SecretKey getSigningKey() {
+        byte[] keyBytes =
+                Decoders.BASE64.decode(secretKey);
 
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
