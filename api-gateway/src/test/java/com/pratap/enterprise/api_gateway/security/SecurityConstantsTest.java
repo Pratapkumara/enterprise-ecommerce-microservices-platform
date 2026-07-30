@@ -2,7 +2,10 @@ package com.pratap.enterprise.api_gateway.security;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SecurityConstantsTest {
 
@@ -18,13 +21,23 @@ class SecurityConstantsTest {
                 SecurityConstants.HEADER_NAME
         );
 
-        assertArrayEquals(
-                new String[]{
+        assertEquals(
+                List.of(
                         "/api/v1/auth/**",
                         "/api/v1/users/register",
                         "/actuator/**"
-                },
+                ),
                 SecurityConstants.PUBLIC_URLS
+        );
+    }
+
+    @Test
+    void publicUrlsShouldBeImmutable() {
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> SecurityConstants.PUBLIC_URLS.add(
+                        "/unsafe"
+                )
         );
     }
 }
