@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,12 +74,12 @@ class JwtAuthenticationFilterTest {
         );
 
         verify(filterChain).doFilter(request, response);
-        verify(jwtService, never()).extractUsername(
-                org.mockito.ArgumentMatchers.anyString()
-        );
+        verify(jwtService, never())
+                .extractUsername(anyString());
 
         assertThat(
-                SecurityContextHolder.getContext().getAuthentication()
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
         ).isNull();
     }
 
@@ -96,9 +97,13 @@ class JwtAuthenticationFilterTest {
         );
 
         verify(filterChain).doFilter(request, response);
-        verify(jwtService, never()).extractUsername(
-                org.mockito.ArgumentMatchers.anyString()
-        );
+        verify(jwtService, never())
+                .extractUsername(anyString());
+
+        assertThat(
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+        ).isNull();
     }
 
     @Test
@@ -115,8 +120,10 @@ class JwtAuthenticationFilterTest {
                 "pratap@example.com"
         )).thenReturn(userDetails);
 
-        when(jwtService.isTokenValid("valid-token", userDetails))
-                .thenReturn(true);
+        when(jwtService.isTokenValid(
+                "valid-token",
+                userDetails
+        )).thenReturn(true);
 
         jwtAuthenticationFilter.doFilterInternal(
                 request,
@@ -125,7 +132,8 @@ class JwtAuthenticationFilterTest {
         );
 
         assertThat(
-                SecurityContextHolder.getContext().getAuthentication()
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
         ).isNotNull();
 
         assertThat(
@@ -133,6 +141,12 @@ class JwtAuthenticationFilterTest {
                         .getAuthentication()
                         .getName()
         ).isEqualTo("pratap@example.com");
+
+        verify(customUserDetailsService)
+                .loadUserByUsername("pratap@example.com");
+
+        verify(jwtService)
+                .isTokenValid("valid-token", userDetails);
 
         verify(filterChain).doFilter(request, response);
     }
@@ -151,8 +165,10 @@ class JwtAuthenticationFilterTest {
                 "pratap@example.com"
         )).thenReturn(userDetails);
 
-        when(jwtService.isTokenValid("invalid-token", userDetails))
-                .thenReturn(false);
+        when(jwtService.isTokenValid(
+                "invalid-token",
+                userDetails
+        )).thenReturn(false);
 
         jwtAuthenticationFilter.doFilterInternal(
                 request,
@@ -161,8 +177,12 @@ class JwtAuthenticationFilterTest {
         );
 
         assertThat(
-                SecurityContextHolder.getContext().getAuthentication()
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
         ).isNull();
+
+        verify(customUserDetailsService)
+                .loadUserByUsername("pratap@example.com");
 
         verify(filterChain).doFilter(request, response);
     }
@@ -194,9 +214,53 @@ class JwtAuthenticationFilterTest {
         );
 
         verify(customUserDetailsService, never())
-                .loadUserByUsername(
-                        org.mockito.ArgumentMatchers.anyString()
+                .loadUserByUsername(anyString());
+
+        verify(jwtService, never())
+                .isTokenValid(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers
+                                .any(UserDetails.class)
                 );
+
+        assertThat(
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+        ).isSameAs(existingAuthentication);
+
+        verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    void shouldNotLoadUserWhenUsernameIsMissing()
+            throws Exception {
+
+        when(request.getHeader(SecurityConstants.HEADER_NAME))
+                .thenReturn("Bearer subjectless-token");
+
+        when(jwtService.extractUsername("subjectless-token"))
+                .thenReturn(null);
+
+        jwtAuthenticationFilter.doFilterInternal(
+                request,
+                response,
+                filterChain
+        );
+
+        verify(customUserDetailsService, never())
+                .loadUserByUsername(anyString());
+
+        verify(jwtService, never())
+                .isTokenValid(
+                        org.mockito.ArgumentMatchers.anyString(),
+                        org.mockito.ArgumentMatchers
+                                .any(UserDetails.class)
+                );
+
+        assertThat(
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+        ).isNull();
 
         verify(filterChain).doFilter(request, response);
     }
