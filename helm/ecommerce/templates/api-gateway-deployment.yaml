@@ -36,3 +36,9 @@ spec:
 
         - name: EUREKA_URL
           value: http://discovery-server:8761/eureka
+
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.security.jwt.existingSecret | quote }}
+              key: {{ .Values.security.jwt.key | quote }}

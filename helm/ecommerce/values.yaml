@@ -1,5 +1,10 @@
 namespace: default
 
+security:
+  jwt:
+    existingSecret: ecommerce-jwt
+    key: JWT_SECRET
+
 images:
 
   frontend:
@@ -8,7 +13,7 @@ images:
 
   apiGateway:
     repository: api-gateway
-    tag: "build-22"
+    tag: "build-23"
 
   product:
     repository: product-service
