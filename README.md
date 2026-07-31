@@ -22,7 +22,7 @@ The React shopping frontend is deployed on AWS EC2 and retrieves live catalogue 
 
 - Application: [http://35.154.87.155](http://35.154.87.155)
 - Frontend release: `ecommerce-frontend:1.2`
-- Current backend release: `build-24`
+- Current backend release: `build-25`
 - Website status: HTTP `200`
 - Product API status: HTTP `200`
 
@@ -34,7 +34,7 @@ The React shopping frontend is deployed on AWS EC2 and retrieves live catalogue 
 |---|---|
 | Platform components | React frontend and 9 backend components |
 | Frontend release | `1.2` |
-| Backend CI/CD release | `build-24` |
+| Backend CI/CD release | `build-25` |
 | Kubernetes workloads | Running and Ready |
 | Jenkins pipeline | Successful |
 | Argo CD application | Synced and Healthy |
