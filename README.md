@@ -12,16 +12,29 @@
 [![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana)](https://grafana.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?logo=postgresql)](https://www.postgresql.org/)
 
-A production-style e-commerce backend built with Spring Boot microservices and a complete DevSecOps delivery platform on AWS EC2.
+A production-style full-stack e-commerce application built with React, Spring Boot microservices, and a complete DevSecOps delivery platform on AWS EC2.
 
-This project demonstrates service discovery, Git-backed centralized configuration, API Gateway routing, JWT security, PostgreSQL persistence, automated testing, static analysis, container security scanning, Kubernetes orchestration, Helm packaging, Argo CD GitOps, and full-stack observability.
+This project demonstrates a live shopping catalogue, service discovery, Git-backed centralized configuration, API Gateway routing, JWT security, PostgreSQL persistence, automated testing, static analysis, container security scanning, Kubernetes orchestration, Helm packaging, Argo CD GitOps, and full-stack observability.
+
+## Live Application
+
+The React shopping frontend is deployed on AWS EC2 and retrieves live catalogue data through the API Gateway and Product Service.
+
+- Application: [http://35.154.87.155](http://35.154.87.155)
+- Frontend release: `ecommerce-frontend:1.2`
+- Latest verified Git revision: `245bded`
+- Website status: HTTP `200`
+- Product API status: HTTP `200`
+
+> The public URL uses an EC2 public IP and may change when the instance is stopped and started.
 
 ## Project Status
 
 | Area | Verified result |
 |---|---|
-| Platform components | 9 deployed components |
-| Latest CI/CD release | `build-22` |
+| Platform components | React frontend and 9 backend components |
+| Frontend release | `1.2` |
+| Backend CI/CD release | `build-22` |
 | Kubernetes workloads | Running and Ready |
 | Jenkins pipeline | Successful |
 | Argo CD application | Synced and Healthy |
@@ -33,7 +46,9 @@ This project demonstrates service discovery, Git-backed centralized configuratio
 | Trivy image scanning | Integrated into CI/CD |
 | Prometheus targets | Up |
 | Grafana dashboard | Configured |
+| Public shopping website | HTTP 200 |
 | Public Product API | HTTP 200 |
+| Frontend health endpoint | UP |
 
 ## GitHub Repositories
 
@@ -63,9 +78,11 @@ config-repository/
 
 ```mermaid
 flowchart TB
-    Client["Web / API Client"] --> Nginx["NGINX Reverse Proxy"]
+    Client["Browser / API Client"] --> Nginx["EC2 NGINX Reverse Proxy"]
     Nginx --> Ingress["Kubernetes NGINX Ingress"]
-    Ingress --> Gateway["API Gateway"]
+    Ingress --> Frontend["React Shopping Frontend"]
+    Frontend --> Gateway["API Gateway"]
+    Ingress --> Gateway
 
     Gateway --> User["User Service"]
     Gateway --> Product["Product Service"]
@@ -105,6 +122,7 @@ flowchart TB
 
 | Component | Port | Responsibility |
 |---|---:|---|
+| React Frontend | 80 | Shopping catalogue, category filters, pricing, and cart interface |
 | Discovery Server | 8761 | Eureka service registration and discovery |
 | Config Server | 8888 | Centralized configuration from the Git configuration repository |
 | API Gateway | 8082 | Routing, JWT validation, and platform entry point |
@@ -116,6 +134,15 @@ flowchart TB
 | Notification Service | 8089 | Order and payment notifications |
 
 ## Technology Stack
+
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- NGINX
+- Responsive shopping interface
+- Live Product Service integration
 
 ### Backend
 
@@ -169,6 +196,9 @@ flowchart TB
 
 ## Core Features
 
+- Responsive React and TypeScript shopping frontend
+- Live product catalogue loaded through the API Gateway
+- Category filters, ratings, pricing, discounts, and cart interface
 - Microservice-based backend architecture
 - Dynamic service discovery through Eureka
 - Git-backed centralized configuration
@@ -382,6 +412,7 @@ Security controls include:
 
 ```text
 enterprise-ecommerce-microservices-platform/
+├── frontend/
 ├── api-gateway/
 ├── config-server/
 ├── discovery-server/
@@ -435,6 +466,7 @@ The Config Server must be configured to read from the configuration repository.
 8. Payment Service
 9. Notification Service
 10. Order Service
+11. React Frontend
 
 Build one service:
 
@@ -464,10 +496,12 @@ kubectl get pods -A
 kubectl get applications -n argocd
 ```
 
-Product API smoke test:
+Frontend and Product API smoke tests:
 
 ```bash
+curl -i http://localhost/
 curl -i http://localhost/api/v1/products
+kubectl exec deployment/ecommerce-frontend -- wget -qO- http://127.0.0.1/health
 ```
 
 Jenkins and SonarQube:
@@ -478,6 +512,10 @@ curl http://localhost:9000/api/system/status
 ```
 
 ## Project Screenshots
+
+### Live React Shopping Frontend
+
+![Live React Shopping Frontend](screenshots/frontend-shopping-home.png)
 
 ### Jenkins CI/CD Pipeline — Build #22 Success
 
@@ -536,8 +574,8 @@ curl http://localhost:9000/api/system/status
 
 ## Future Enhancements
 
-- React-based shopping frontend
-- Shopping cart and checkout services
+- Persistent shopping cart and checkout workflow
+- Real payment gateway integration
 - Kafka-based asynchronous events
 - Redis caching
 - OpenTelemetry distributed tracing
