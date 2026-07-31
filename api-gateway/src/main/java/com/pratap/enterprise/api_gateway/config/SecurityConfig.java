@@ -38,7 +38,9 @@ public class SecurityConfig {
                         .requestMatchers(publicUrls).permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/api/v1/products",
                                 "/api/v1/products/**",
+                                "/api/v1/inventory",
                                 "/api/v1/inventory/**"
                         ).permitAll()
                         .requestMatchers(

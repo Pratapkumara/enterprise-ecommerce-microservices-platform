@@ -13,7 +13,7 @@ images:
 
   apiGateway:
     repository: api-gateway
-    tag: "build-24"
+    tag: "build-25"
 
   product:
     repository: product-service
