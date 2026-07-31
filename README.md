@@ -22,7 +22,7 @@ The React shopping frontend is deployed on AWS EC2 and retrieves live catalogue 
 
 - Application: [http://35.154.87.155](http://35.154.87.155)
 - Frontend release: `ecommerce-frontend:1.2`
-- Latest verified Git revision: `245bded`
+- Current backend release: `build-24`
 - Website status: HTTP `200`
 - Product API status: HTTP `200`
 
@@ -34,7 +34,7 @@ The React shopping frontend is deployed on AWS EC2 and retrieves live catalogue 
 |---|---|
 | Platform components | React frontend and 9 backend components |
 | Frontend release | `1.2` |
-| Backend CI/CD release | `build-22` |
+| Backend CI/CD release | `build-24` |
 | Kubernetes workloads | Running and Ready |
 | Jenkins pipeline | Successful |
 | Argo CD application | Synced and Healthy |
@@ -315,6 +315,10 @@ The Jenkins pipeline automates:
 
 ## Kubernetes and Helm
 
+### JWT Signing Secret
+
+The JWT signing key is not stored in Git. Before deployment, create a Kubernetes Secret named `ecommerce-jwt` containing the key `JWT_SECRET`. Helm injects it into API Gateway and User Service through `secretKeyRef`.
+
 Helm chart:
 
 ```text
@@ -399,7 +403,8 @@ SonarQube evaluates bugs, vulnerabilities, security hotspots, code smells, test 
 
 Security controls include:
 
-- Stateless JWT authentication
+- Stateless JWT authentication with API Gateway token validation
+- JWT signing key externalized through a Kubernetes Secret
 - BCrypt password hashing
 - Protected user endpoints
 - Public registration and login endpoints
