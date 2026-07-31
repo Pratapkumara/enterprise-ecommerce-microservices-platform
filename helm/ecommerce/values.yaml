@@ -17,35 +17,35 @@ images:
 
   product:
     repository: product-service
-    tag: "build-24"
+    tag: "build-25"
 
   user:
     repository: user-service
-    tag: "build-24"
+    tag: "build-25"
 
   inventory:
     repository: inventory-service
-    tag: "build-24"
+    tag: "build-25"
 
   order:
     repository: order-service
-    tag: "build-24"
+    tag: "build-25"
 
   payment:
     repository: payment-service
-    tag: "build-24"
+    tag: "build-25"
 
   notification:
     repository: notification-service
-    tag: "build-24"
+    tag: "build-25"
 
   discovery:
     repository: discovery-server
-    tag: "build-24"
+    tag: "build-25"
 
   config:
     repository: config-server
-    tag: "build-24"
+    tag: "build-25"
 
 
 services:
