@@ -39,7 +39,8 @@ The React shopping frontend is deployed on AWS EC2 and retrieves live catalogue 
 | Jenkins pipeline | Successful |
 | Argo CD application | Synced and Healthy |
 | SonarQube analysis | Quality Gates passed |
-| Product Service coverage | 87.1% |
+| Product Service overall coverage | 87.1% |
+| Product Service new-code coverage | 100% on 47 lines |
 | Product Service tests | 19 |
 | Verified bugs | 0 |
 | Verified vulnerabilities | 0 |
